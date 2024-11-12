@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+
+bt2idx=../../../Genomes/genomeMM39DM6/MM39DM6
+FASTQdir=../../2_Cleaning_Reads
+bt2_threads=24
+st_threads=24
+SAMPLE=$1
+
+
+# 1. Map the paired-end reads from "SAMPLE" to the mm39/dm6 genome:
+#
+bowtie2 \
+	--threads ${bt2_threads} --no-unal \
+	-x ${bt2idx} \
+	-1 ${FASTQdir}/${SAMPLE}_R1.fq \
+	-2 ${FASTQdir}/${SAMPLE}_R2.fq \
+	-S ./tmp_${SAMPLE}.sam
+
+# 2. Select only properly mapped read pairs:
+#
+samtools view -H ./tmp_${SAMPLE}.sam \
+	>  ./${SAMPLE}.sam
+samtools view -@ ${st_threads} ./tmp_${SAMPLE}.sam \
+	| awk '{if ($2 == 99 || $2 == 147 || $2 == 83 || $2 == 163) print $0}' \
+	>> ./${SAMPLE}.sam
+
+# 3. Split the sample SAM file into mm39 and dm6 matching alignments, removing
+#    the genome labels:
+#
+samtools view -H ${SAMPLE}.sam |\
+	sed -e "s/^@SQ	SN:MM39/@SQ	SN:/; /^@SQ	SN:DM6.*$/d;" \
+	> ${SAMPLE}.mm39.sam
+samtools view -h ${SAMPLE}.sam |\
+	grep "	MM39" | sed -e "s/	MM39/	/;" \
+	>> ${SAMPLE}.mm39.sam
+
+samtools view -H ${SAMPLE}.sam |\
+	sed -e "s/^@SQ	SN:DM6/@SQ	SN:/; /^@SQ	SN:MM39.*$/d;" \
+	> ${SAMPLE}.dm6.sam
+samtools view -h ${SAMPLE}.sam |\
+	grep "	DM6" | sed -e "s/	DM6/	/;" \
+	>> ${SAMPLE}.dm6.sam
+
+# 4. Make sorted and indexed BAM files from the species specific SAM files:
+#
+samtools view -h -b -@ ${st_threads} ./${SAMPLE}.mm39.sam \
+	| samtools sort -@ ${st_threads} -o ${SAMPLE}.mm39.bam -
+samtools index -@ ${st_threads} ./${SAMPLE}.mm39.bam
+samtools view -h -b -@ ${st_threads} ./${SAMPLE}.dm6.sam \
+	| samtools sort -@ ${st_threads} -o ${SAMPLE}.dm6.bam -
+samtools index -@ ${st_threads} ./${SAMPLE}.dm6.bam
+
+# 5. Clean up:
+#
+\rm tmp_${SAMPLE}.sam

@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+
+bamfile=$1
+
+samtools view ${bamfile} | cut -f2 > ${bamfile}-tmpSAMcodes
+n=`cat ${bamfile}-tmpSAMcodes | wc -l`
+echo -e "There are $n entries in file ${bamfile} with SAM codes:\n"
+
+cat ${bamfile}-tmpSAMcodes | sort -u > ${bamfile}-tmpSAMtypes
+SAMtypes=`cat ${bamfile}-tmpSAMtypes | tr '\n' ' '`
+echo -e "\t${SAMtypes}\n"
+
+sum=0
+echo -e "These types occur with counts:\n"
+for t in ${SAMtypes}
+do
+  n=`grep -c "^${t}$" ${bamfile}-tmpSAMcodes`
+  echo -e "$t	$n"
+  sum=$(($sum + $n))
+done
+echo -e "\nCheck: The sum of counts is $sum\n"
+
+
+m=`grep -c "^99$\|^147$" ${bamfile}-tmpSAMcodes`
+n=`grep -c "^83$\|^163$" ${bamfile}-tmpSAMcodes`
+mn=$(($m +$n))
+
+if [[ $mn -gt 0 ]]; then
+  r=`echo "scale=2 ; 100 * $mn / $sum" | bc`
+  echo -e "\nMapping success = percentage of good pairs (99/147 and 83/163) = $mn/$sum:	 $r%" 
+  echo -e "\nNote: If the input bam file represents bowtie2 alignments, then the mapping success"
+  echo -e "       is the sum of the read pairs reported as aligned concordantly exactly 1 time"
+  echo -e "       and >1 times."
+else
+  m=`grep -c "^0$" ${bamfile}-tmpSAMcodes`
+  n=`grep -c "^16$" ${bamfile}-tmpSAMcodes`
+  mn=$(($m +$n))
+  r=`echo "scale=2 ; 100 * $mn / $sum" | bc`
+  echo -e "\nMapping success = percentage of mapped reads (0 and 16) = $mn/$sum:	 $r%" 
+fi
+
+\rm ${bamfile}-tmpSAMcodes ${bamfile}-tmpSAMtypes

@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+# Run this script from within the CTBPprj singularity container, e.g.
+# with "rws" specified as follows:
+#
+workdir=${PWD}/..
+SIF=${workdir}/Tools/CTBPprj.sif
+
+#giving an alias for executing the singularity container
+
+alias rws="singularity exec -e -B${workdir} ${SIF}"
+
+
+# 1. Acquiring the raw data for the H3K4me3 ChIP-Seq replicates from different developmental stages
+bash ./x1_download_raw_reads
+#  Derive summary statistics:
+rws seqkit stats -j 10 ./1_Raw_Reads/*.fastq > ./1_Raw_Reads/summary.stats
+rws seqkit stats -j 10 ./1_Raw_Reads/*.fastq -T > ./1_Raw_Reads/summary.tsv
+
+
+# 2. Clean the raw reads and run a quality check on them
+bash ./x2_clean_raw_reads
+
+
+# 3. Align the cleaned raw reads into the the reference genome
+bash ./x3_map_reads
+
+
+# 4. Call the peaks and process them by filtering out blacklist regions and reproducing them
+bash ./x4a_callPeaks;bash ./x4b_filterBlacklistRegions >& ./y4b_filterBlacklistRegions_log.txt;bash ./x4c_reproducePeaks >& ./y4c_reproducePeaks_log.txt
+
+
+# 5. Generate the bigWig files for visualization
+bash ./x5a_generate_bigWigs >& y5a_generate_bigWigs_log.txt

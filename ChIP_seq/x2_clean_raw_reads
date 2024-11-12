@@ -1,0 +1,128 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+
+workdir=${PWD}/..
+SIF=${workdir}/Tools/CTBPprj.sif
+
+
+#giving an alias for executing the singularity container
+alias rws="singularity exec -e -B${workdir} ${SIF}"
+
+
+rawData_dir=${workdir}/ChIP_seq/1_Raw_Reads
+cleanReads_dir=${workdir}/ChIP_seq/2_Cleaning_Reads
+
+
+cd ${cleanReads_dir}
+rws bash ${cleanReads_dir}/xqctrl_SE
+rws bash ${cleanReads_dir}/xqctrl_PE
+
+
+# Summary:
+#
+bash ${cleanReads_dir}/xmv
+
+rws seqkit stats -j 13 *fq > summary.stats
+rws seqkit stats -j 13 *fq -T > summary.tsv
+
+cd ..
+: '
+# Trimming the single-end sequencing samples
+for sample in CTCF_wb_1 CTCF_wb_2 H3K4me1_e_1 H3K4me1_e_2 H3K4me3_e_1 H3K4me3_e_2 H3K27ac_e_1 H3K27ac_e_2 INPUT_CTCF_wb_1 INPUT_CTCF_wb_2 INPUT_H3K4me1_e_1 INPUT_H3K4me1_e_2 INPUT_H3K4me3_e_1 INPUT_H3K4me3_e_2 INPUT_H3K27ac_e_1 INPUT_H3K27ac_e_2 INPUT_PRDM16_e_1 INPUT_PRDM16_e_2 PRDM16_e_1 PRDM16_e_2
+do
+
+
+   mkdir ${cleanReads_dir}/${sample}
+   mkdir ${cleanReads_dir}/${sample}/1_FastQC_Before
+   rws fastqc --threads 8 \
+         --extract --outdir=${cleanReads_dir}/${sample}/1_FastQC_Before \
+         ${rawData_dir}/chs_${sample}.fastq
+   
+
+   rws java -jar ${TRIMMOMATIC} SE \
+         -phred33 \
+         -threads 16 \
+         ${rawData_dir}/chs_${sample}.fastq \
+         ${cleanReads_dir}/${sample}/${sample}_clean.fastq \
+         ILLUMINACLIP:${ADAPTERS}/TruSeq2-SE.fa:2:30:15 \
+         LEADING:20 \
+         SLIDINGWINDOW:5:20 \
+         TRAILING:20 \
+         CROP:30 \
+         MINLEN:25
+     
+         
+   rws 	tagdust -ref ${rRNAFILE} \
+         -t 8 -dust 97 \
+	 -fe 3 -1 R:N \
+       	 -o ${cleanReads_dir}/${sample}/${sample}_dusted \
+       	 ${cleanReads_dir}/${sample}/${sample}_clean.fastq \
+	 >& ${cleanReads_dir}/${sample}/${sample}_tagdust_log
+	
+		
+   mv ${cleanReads_dir}/${sample}/${sample}_dusted.fq ${cleanReads_dir}/${sample}/${sample}.fq
+   mkdir ${cleanReads_dir}/${sample}/2_FastQC_After
+   rws fastqc --threads 8 \
+         --extract --outdir=${cleanReads_dir}/${sample}/2_FastQC_After \
+         ${cleanReads_dir}/${sample}/${sample}.fq
+   
+  
+done
+
+
+
+# Trimming the paired-end sequencing samples
+for sample in CTBP2_e_1 CTBP2_e_2 CTBP2ko_n_1 CTBP2ko_n_2 CTBP2wt_n_1 CTBP2wt_n_2 HDAC1_e_1 HDAC1_e_2 INPUT_e_3 INPUT_e_4 INPUT_n_3 LSD1_e_1 LSD1_e_2
+do
+
+
+   mkdir ${cleanReads_dir}/${sample}
+   mkdir ${cleanReads_dir}/${sample}/1_FastQC_Before
+   rws fastqc --threads 8 \
+         --extract --outdir=${cleanReads_dir}/${sample}/1_FastQC_Before \
+         ${rawData_dir}/chs_${sample}_R1.fastq
+   rws fastqc --threads 8 \
+         --extract --outdir=${cleanReads_dir}/${sample}/1_FastQC_Before \
+         ${rawData_dir}/chs_${sample}_R2.fastq
+   
+
+   rws java -jar ${TRIMMOMATIC} PE \
+         -phred33 \
+         -threads 16 \
+         ${rawData_dir}/chs_${sample}_R1.fastq \
+         ${rawData_dir}/chs_${sample}_R2.fastq \
+         ${cleanReads_dir}/${sample}/${sample}_clean_R1.fastq \
+         ${cleanReads_dir}/${sample}/${sample}_clean_unpaired_R1.fastq \
+         ${cleanReads_dir}/${sample}/${sample}_clean_R2.fastq \
+         ${cleanReads_dir}/${sample}/${sample}_clean_unpaired_R2.fastq \
+         ILLUMINACLIP:${ADAPTERS}/TruSeq2-PE.fa:2:30:15 \
+         LEADING:20 \
+         SLIDINGWINDOW:6:20 \
+         TRAILING:20 \
+         MINLEN:40
+  
+       
+   rws 	tagdust -ref ${rRNAFILE} \
+         -t 8 -dust 97 \
+	 -fe 3 -1 R:N \
+       	 -o ${cleanReads_dir}/${sample}/${sample}_dusted \
+       	 ${cleanReads_dir}/${sample}/${sample}_clean_R1.fastq \
+       	 ${cleanReads_dir}/${sample}/${sample}_clean_R2.fastq \
+	 >& ${cleanReads_dir}/${sample}/${sample}_tagdust_log
+	
+		
+   mv ${cleanReads_dir}/${sample}/${sample}_dusted_R1.fq ${cleanReads_dir}/${sample}/${sample}_R1.fq
+   mv ${cleanReads_dir}/${sample}/${sample}_dusted_R2.fq ${cleanReads_dir}/${sample}/${sample}_R2.fq
+   mkdir ${cleanReads_dir}/${sample}/2_FastQC_After
+   rws fastqc --threads 8 \
+         --extract --outdir=${cleanReads_dir}/${sample}/2_FastQC_After \
+         ${cleanReads_dir}/${sample}/${sample}_R1.fq
+   rws fastqc --threads 8 \
+         --extract --outdir=${cleanReads_dir}/${sample}/2_FastQC_After \
+         ${cleanReads_dir}/${sample}/${sample}_R2.fq
+   
+  
+done
+'

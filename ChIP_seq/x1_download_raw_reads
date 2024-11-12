@@ -1,0 +1,114 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+
+workdir=${PWD}/..
+SIF=${workdir}/Tools/CTBPprj.sif
+
+
+#giving an alias for executing the singularity container
+alias rws="singularity exec -e -B${workdir} ${SIF}"
+
+
+RAW_DATA_dir=${workdir}/ChIP_seq/1_Raw_Reads
+
+
+#This is a for loop that downloads the previously published ChIP-seq raw data that we used for our paper
+#
+for acc in SRR6823762 SRR6823763 SRR6823764 SRR6823765 SRR6823766 SRR6823767 SRR6823768 SRR6823769 SRR6823782 SRR6823783 SRR6823784 SRR6823785 SRR6823786 SRR6823787 SRR6823788 SRR6823789 SRR6823790 SRR6823791 SRR6823774 SRR6823775 SRR6823776 SRR6823777 SRR3651517 SRR3651670 SRR3651516 SRR3651669 SRR578278 SRR489727 SRR578279 SRR578284 
+do
+	echo ${acc} >> ${RAW_DATA_dir}/download.log
+	rws fasterq-dump ${acc} >> ${RAW_DATA_dir}/download.log 2>&1
+	echo -e "\n" >> ${RAW_DATA_dir}/download.log
+done
+echo -e "\n" >> ${RAW_DATA_dir}/download.log
+
+# Move the raw data files to the "1_Raw_Reads" directory and rename them accordingly
+mv SRR* ${RAW_DATA_dir}
+
+cat ${RAW_DATA_dir}/SRR6823762.fastq ${RAW_DATA_dir}/SRR6823763.fastq > ${RAW_DATA_dir}/chs_PRDM16_e_1.fastq
+cat ${RAW_DATA_dir}/SRR6823764.fastq ${RAW_DATA_dir}/SRR6823765.fastq > ${RAW_DATA_dir}/chs_INPUT_PRDM16_e_1.fastq
+
+cat ${RAW_DATA_dir}/SRR6823766.fastq ${RAW_DATA_dir}/SRR6823767.fastq > ${RAW_DATA_dir}/chs_PRDM16_e_2.fastq
+cat ${RAW_DATA_dir}/SRR6823768.fastq ${RAW_DATA_dir}/SRR6823769.fastq > ${RAW_DATA_dir}/chs_INPUT_PRDM16_e_2.fastq
+
+cat ${RAW_DATA_dir}/SRR6823782.fastq ${RAW_DATA_dir}/SRR6823783.fastq ${RAW_DATA_dir}/SRR6823784.fastq > ${RAW_DATA_dir}/chs_H3K27ac_e_1.fastq
+cat ${RAW_DATA_dir}/SRR6823785.fastq ${RAW_DATA_dir}/SRR6823786.fastq > ${RAW_DATA_dir}/chs_INPUT_H3K27ac_e_1.fastq
+
+cat ${RAW_DATA_dir}/SRR6823787.fastq ${RAW_DATA_dir}/SRR6823788.fastq ${RAW_DATA_dir}/SRR6823789.fastq > ${RAW_DATA_dir}/chs_H3K27ac_e_2.fastq
+cat ${RAW_DATA_dir}/SRR6823790.fastq ${RAW_DATA_dir}/SRR6823791.fastq > ${RAW_DATA_dir}/chs_INPUT_H3K27ac_e_2.fastq
+
+mv ${RAW_DATA_dir}/SRR6823774.fastq ${RAW_DATA_dir}/chs_H3K4me1_e_1.fastq
+mv ${RAW_DATA_dir}/SRR6823775.fastq ${RAW_DATA_dir}/chs_INPUT_H3K4me1_e_1.fastq
+mv ${RAW_DATA_dir}/SRR6823776.fastq ${RAW_DATA_dir}/chs_H3K4me1_e_2.fastq
+mv ${RAW_DATA_dir}/SRR6823777.fastq ${RAW_DATA_dir}/chs_INPUT_H3K4me1_e_2.fastq
+mv ${RAW_DATA_dir}/SRR3651517.fastq ${RAW_DATA_dir}/chs_H3K4me3_e_1.fastq
+mv ${RAW_DATA_dir}/SRR3651670.fastq ${RAW_DATA_dir}/chs_INPUT_H3K4me3_e_1.fastq
+mv ${RAW_DATA_dir}/SRR3651516.fastq ${RAW_DATA_dir}/chs_H3K4me3_e_2.fastq
+mv ${RAW_DATA_dir}/SRR3651669.fastq ${RAW_DATA_dir}/chs_INPUT_H3K4me3_e_2.fastq
+mv ${RAW_DATA_dir}/SRR578278.fastq ${RAW_DATA_dir}/chs_CTCF_wb_1.fastq
+mv ${RAW_DATA_dir}/SRR489727.fastq ${RAW_DATA_dir}/chs_INPUT_CTCF_wb_1.fastq
+mv ${RAW_DATA_dir}/SRR578279.fastq ${RAW_DATA_dir}/chs_CTCF_wb_2.fastq
+mv ${RAW_DATA_dir}/SRR578284.fastq ${RAW_DATA_dir}/chs_INPUT_CTCF_wb_2.fastq
+
+\rm ${RAW_DATA_dir}/SRR*fastq
+
+
+
+#This is a for loop that downloads our published ChIP-seq raw data that we generated for our paper
+#
+: '
+for acc in SRR29778937 SRR29778936 SRR29778915 SRR29778914 SRR29778931 SRR29778930 SRR29778934 SRR29778933 SRR29778919 SRR29778925 SRR29778918 SRR29778920 SRR29778932
+do
+	echo ${acc} >> download.log
+	rws fasterq-dump ${acc} >> download.log 2>&1
+	echo -e "\n" >> download.log
+done
+
+# Move the raw data files to the "1_Raw_Reads" directory and rename them accordingly
+mv SRR* ${RAW_DATA_dir}
+
+mv ${RAW_DATA_dir}/SRR29778937_1.fastq ${RAW_DATA_dir}/chs_CTBP2_e_1_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778937_2.fastq ${RAW_DATA_dir}/chs_CTBP2_e_1_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778936_1.fastq ${RAW_DATA_dir}/chs_CTBP2_e_2_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778936_2.fastq ${RAW_DATA_dir}/chs_CTBP2_e_2_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778915_1.fastq ${RAW_DATA_dir}/chs_HDAC1_e_1_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778915_2.fastq ${RAW_DATA_dir}/chs_HDAC1_e_1_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778914_1.fastq ${RAW_DATA_dir}/chs_HDAC1_e_2_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778914_2.fastq ${RAW_DATA_dir}/chs_HDAC1_e_2_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778931_1.fastq ${RAW_DATA_dir}/chs_LSD1_e_1_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778931_2.fastq ${RAW_DATA_dir}/chs_LSD1_e_1_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778930_1.fastq ${RAW_DATA_dir}/chs_LSD1_e_2_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778930_2.fastq ${RAW_DATA_dir}/chs_LSD1_e_2_R2.fastq
+
+# INPUT_e_3 is the control for CTBP2_e_1 and HDAC1_e_1
+mv ${RAW_DATA_dir}/SRR29778934_1.fastq ${RAW_DATA_dir}/chs_INPUT_e_3_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778934_2.fastq ${RAW_DATA_dir}/chs_INPUT_e_3_R2.fastq
+
+# INPUT_e_4 is the control for CTBP2_e_2, HDAC1_e_2, LSD1_e_1, and LSD1_e_2
+mv ${RAW_DATA_dir}/SRR29778933_1.fastq ${RAW_DATA_dir}/chs_INPUT_e_4_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778933_2.fastq ${RAW_DATA_dir}/chs_INPUT_e_4_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778919_1.fastq ${RAW_DATA_dir}/chs_CTBP2wt_n_1_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778919_2.fastq ${RAW_DATA_dir}/chs_CTBP2wt_n_1_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778925_1.fastq ${RAW_DATA_dir}/chs_CTBP2ko_n_1_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778925_2.fastq ${RAW_DATA_dir}/chs_CTBP2ko_n_1_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778918_1.fastq ${RAW_DATA_dir}/chs_CTBP2wt_n_2_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778918_2.fastq ${RAW_DATA_dir}/chs_CTBP2wt_n_2_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778920_1.fastq ${RAW_DATA_dir}/chs_CTBP2ko_n_2_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778920_2.fastq ${RAW_DATA_dir}/chs_CTBP2ko_n_2_R2.fastq
+
+# INPUT_e_4 is the control for CTBP2wt_n_1, CTBP2wt_n_2 and CTBP2ko_n_1, and CTBP2ko_n_2
+
+mv ${RAW_DATA_dir}/SRR29778932_1.fastq ${RAW_DATA_dir}/chs_INPUT_n_3_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778932_2.fastq ${RAW_DATA_dir}/chs_INPUT_n_3_R2.fastq
+'

@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+
+# Mapping the cleaned raw reads against the MM39 reference genome
+cd ./3_Alignment/bt2VSmm39/
+#bash ./0Record
+
+cd ..
+
+# Mapping the cleaned raw reads for the spike-in samples against the composite MM39DM6 reference genome
+cd ./bt2VSmm39dm6
+bash ./0Record
+
+cd ../..

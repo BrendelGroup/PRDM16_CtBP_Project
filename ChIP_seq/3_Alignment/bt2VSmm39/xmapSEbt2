@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+
+bt2idx=../../../Genomes/genomeMM39/BSgenome.Mmusculus.UCSC.mm39chrs
+FASTQdir=../../2_Cleaning_Reads
+bt2_threads=16
+st_threads=16
+SAMPLE=$1
+
+
+# 1. Map the single-end reads from "SAMPLE" to the mm39 genome:
+#
+bowtie2 \
+	--threads ${bt2_threads} --no-unal \
+	-x ${bt2idx} \
+	-U ${FASTQdir}/${SAMPLE}.fq \
+	-S ./${SAMPLE}.sam
+
+# 2. Make a sorted and indexed bam file from the sam file:
+#
+samtools view -h -b -@ ${st_threads} ./${SAMPLE}.sam \
+	| samtools sort -@ ${st_threads} -o ${SAMPLE}.bam -
+samtools index -@ ${st_threads} ./${SAMPLE}.bam

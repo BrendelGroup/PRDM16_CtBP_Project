@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+
+for exprmnt in INPUT_n_3 CTBP2ko_n_1 CTBP2ko_n_2 CTBP2wt_n_1 CTBP2wt_n_2
+do
+  echo -e "\n\nNow running:\n./xmapPEbt2 ${exprmnt} >& log_${exprmnt}"
+  time ./xmapPEbt2 ${exprmnt} >& log_${exprmnt}
+done

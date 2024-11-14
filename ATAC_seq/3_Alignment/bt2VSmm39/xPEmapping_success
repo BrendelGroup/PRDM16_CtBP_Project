@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+
+workdir=../..
+
+
+for exprmnt in ats_e_1 ats_e_2
+do
+  echo -e "\nNow running: ${workdir}/../Tools/xcountSAMtypes ${exprmnt}.bam > ${exprmnt}.mapped.PEread.counts"
+  ${workdir}/../Tools/xcountSAMtypes ${exprmnt}.bam > ${exprmnt}.mapped.PEread.counts &
+done
+wait
+
+grep "Mapping success" *.mapped.PEread.counts | cut -d":" -f1,3 | sed -e "s/.mapped.read.counts://"  > PEmapping_success.summary
+
+
+perl -e "print(\"Sample      \tAll Reads\tAfter trimming  \tAfter dusting   \tAfter mapping\n\")" > PEread_processing.summary
+for exprmnt in ats_e_1 ats_e_2
+do
+  trimmomatic_log=${workdir}/2_Cleaning_Reads/${exprmnt}/err_${exprmnt}
+  tagdust_log=${workdir}/2_Cleaning_Reads/${exprmnt}/tagdust_log
+  mapping_log=${workdir}/3_Alignment/bt2VSmm39/${exprmnt}.mapped.PEread.counts
+
+  a=`grep "Input Read Pairs:" ${trimmomatic_log} | sed -e "s/Input Read Pairs: //; s/ Both Surviving.*//;"`
+  s=`grep "Input Read Pairs:" ${trimmomatic_log} | sed -e "s/Input Read Pairs:.*Both Surviving: //;" | cut -d" " -f1`
+  e=`grep "successfully extracted" ${tagdust_log} | cut -d"]" -f2 | cut -f2`
+  m=`grep "^Check: The sum of counts is" ${mapping_log} | cut -d" " -f7`
+
+  perl -e "\$a =$a; \$s = $s; \$e = $e; \$m = $m/2; printf(\"%15s\t%9d\t%9d \(%6.2f\%\)\t\%9d \(%6.2f\%\)\t\%9d \(%6.2f\%\)\n\", $exprmnt, \$a, \$s, 100*\$s/\$a, \$e, 100*\$e/\$a, \$m, 100*\$m/\$a);" >> PEread_processing.summary
+done

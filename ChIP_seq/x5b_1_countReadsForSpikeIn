@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+
+workdir=${PWD}/..
+SIF=${workdir}/Tools/chs_analysis.sif
+
+
+#giving an alias for executing the singularity container
+alias rws="singularity exec -e -B${workdir} ${SIF}"
+
+
+
+#Generate counts of reads that mapped to dm6 and mm39 for the spiked-in samples. The counts will be used to calculate the normalization scale factors.
+
+
+BAM_NSC_dir=${workdir}/ChIP_seq/3_Alignment/bt2VSmm39dm6
+
+
+#Count the reads in the mapped spiked ChIP-Seq experiments (drosophila and mouse reads)
+
+echo 'The count of drosophila reads for the CTBP2wt_n_1 is:' "$(rws samtools view -c ${BAM_NSC_dir}/CTBP2wt_n_1.dm6.bam)"
+echo ''
+echo 'The count of drosophila reads for the CTBP2wt_n_2 is:' "$(rws samtools view -c ${BAM_NSC_dir}/CTBP2wt_n_2.dm6.bam)"
+echo ''
+echo 'The count of drosophila reads for the CTBP2ko_n_1 is:' "$(rws samtools view -c ${BAM_NSC_dir}/CTBP2ko_n_1.dm6.bam)"
+echo ''
+echo 'The count of drosophila reads for the CTBP2ko_n_2 is:' "$(rws samtools view -c ${BAM_NSC_dir}/CTBP2ko_n_2.dm6.bam)"
+echo ''
+echo 'The count of mouse reads for the CTBP2wt_n_1 is:' "$(rws samtools view -c ${BAM_NSC_dir}/CTBP2wt_n_1.mm39.bam)"
+echo ''
+echo 'The count of mouse reads for the CTBP2wt_n_2 is:' "$(rws samtools view -c ${BAM_NSC_dir}/CTBP2wt_n_2.mm39.bam)"
+echo ''
+echo 'The count of mouse reads for the CTBP2ko_n_1 is:' "$(rws samtools view -c ${BAM_NSC_dir}/CTBP2ko_n_1.mm39.bam)"
+echo ''
+echo 'The count of mouse reads for the CTBP2ko_n_2 is:' "$(rws samtools view -c ${BAM_NSC_dir}/CTBP2ko_n_2.mm39.bam)"

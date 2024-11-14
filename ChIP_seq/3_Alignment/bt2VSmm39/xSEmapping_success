@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+
+workdir=../..
+
+
+for exprmnt in CTCF_wb_1 CTCF_wb_2 H3K27ac_e_1 H3K27ac_e_2 H3K4me1_e_1 H3K4me1_e_2 H3K4me3_e_1 H3K4me3_e_2 INPUT_CTCF_wb_1 INPUT_CTCF_wb_2 INPUT_H3K27ac_e_1 INPUT_H3K27ac_e_2 INPUT_H3K4me1_e_1 INPUT_H3K4me1_e_2 INPUT_H3K4me3_e_1 INPUT_H3K4me3_e_2 INPUT_PRDM16_e_1 INPUT_PRDM16_e_2 PRDM16_e_1 PRDM16_e_2 
+do
+  echo -e "\nNow running: ${workdir}/../Tools/xcountSAMtypes ${exprmnt}.bam > ${exprmnt}.mapped.SEread.counts"
+  ${workdir}/../Tools/xcountSAMtypes ${exprmnt}.bam > ${exprmnt}.mapped.SEread.counts &
+done
+wait
+
+grep "Mapping success" *.mapped.SEread.counts | cut -d":" -f1,3 | sed -e "s/.mapped.SEread.counts://"  > SEmapping_success.summary
+
+
+perl -e "print(\"Sample      \tAll Reads\tAfter trimming  \tAfter dusting   \tAfter mapping\n\")" > SEread_processing.summary
+
+for exprmnt in CTCF_wb_1 CTCF_wb_2 H3K27ac_e_1 H3K27ac_e_2 H3K4me1_e_1 H3K4me1_e_2 H3K4me3_e_1 H3K4me3_e_2 INPUT_CTCF_wb_1 INPUT_CTCF_wb_2 INPUT_H3K27ac_e_1 INPUT_H3K27ac_e_2 INPUT_H3K4me1_e_1 INPUT_H3K4me1_e_2 INPUT_H3K4me3_e_1 INPUT_H3K4me3_e_2 INPUT_PRDM16_e_1 INPUT_PRDM16_e_2 PRDM16_e_1 PRDM16_e_2 
+do
+  trimmomatic_log=${workdir}/2_Cleaning_Reads/${exprmnt}/err_${exprmnt}
+  tagdust_log=${workdir}/2_Cleaning_Reads/${exprmnt}/tagdust_log
+  mapping_log=${workdir}/3_Alignment/bt2VSmm39/${exprmnt}.mapped.SEread.counts
+
+  a=`grep "Input Reads:" ${trimmomatic_log} | sed -e "s/Input Reads: //; s/ Surviving.*//;"`
+  s=`grep "Input Reads:" ${trimmomatic_log} | sed -e "s/Input Reads:.*Surviving: //;" | cut -d" " -f1`
+  e=`grep "successfully extracted" ${tagdust_log} | cut -d"]" -f2 | cut -f2`
+  m=`grep "^Check: The sum of counts is" ${mapping_log} | cut -d" " -f7`
+
+  perl -e "\$a =$a; \$s = $s; \$e = $e; \$m = $m; printf(\"%15s\t%9d\t%9d \(%6.2f\%\)\t\%9d \(%6.2f\%\)\t\%9d \(%6.2f\%\)\n\", $exprmnt, \$a, \$s, 100*\$s/\$a, \$e, 100*\$e/\$a, \$m, 100*\$m/\$a);" >> SEread_processing.summary
+done

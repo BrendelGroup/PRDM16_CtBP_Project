@@ -1,0 +1,10 @@
+# To download the genome data for Drosophila melanogaster (version dm6), you
+#  can simply execute the following command:
+#
+time bash ./0Record 
+
+#real	29m19.926s
+#user	68m7.440s
+#sys	14m7.783s
+
+# See comments in 0Record for details.

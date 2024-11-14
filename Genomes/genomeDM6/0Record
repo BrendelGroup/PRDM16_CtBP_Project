@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+# Run this script from within the CTBPprj singularity container, e.g.
+# with "rws" specified as follows:
+#
+workdir=${PWD}/../..
+prjSIF=${workdir}/Tools/CTBPprj.sif
+
+alias rws="singularity exec -e -B${workdir} ${prjSIF}"
+
+
+# Genome files preparation.
+# For details, see the comments in the R scripts.
+#
+
+# Get the genome files:
+#
+time rws Rscript xpgDmel6-Step1.R >& log1
+
+#real    0m16.829s
+#user    0m15.522s
+#sys     0m1.244s
+
+
+# Build the bowtie2 index:
+#
+time rws Rscript xpgDmel6-Step2.R >& log2
+
+#real	1m55.664s
+#user	19m14.188s
+#sys	0m7.989s
+
+
+# Get and save the genome annotation in UCSC style and create a gene name/ID table:
+#
+rws bash xpgDmel6-Step3.sh
+
+# ... the script also creates Dmel_rRNA.fa (for pulling out reads matching rRNAs).

@@ -1,0 +1,4 @@
+mv ats_e_1/ats_e_1_R1.fq ./
+mv ats_e_1/ats_e_1_R2.fq ./
+mv ats_e_2/ats_e_2_R1.fq ./
+mv ats_e_2/ats_e_2_R2.fq ./

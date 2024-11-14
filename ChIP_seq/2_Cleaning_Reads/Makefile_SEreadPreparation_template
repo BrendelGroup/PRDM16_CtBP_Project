@@ -1,0 +1,170 @@
+#Makefile_SEreadPreparation-template
+#
+
+SRCDIR            = /opt
+SRATOOLKIT        = ${SRCDIR}/sratoolkit.3.1.0-ubuntu64/bin
+FASTQC            = ${SRCDIR}/FastQC
+TRIMMOMATIC       = ${SRCDIR}/Trimmomatic-0.39/trimmomatic-0.39.jar
+ADAPTORS          = ${SRCDIR}/Trimmomatic-0.39/adapters
+NGSUTILS          = /usr/local/bin/ngsutilsj
+rRNAFILE          = ../../../Genomes/genomeMM39/Mmus_rRNA.fa \
+
+
+#Usage:
+#
+#  make -j X -f Makefile_SEreadPreparation-LABEL >& err
+#
+#where X is the number of processors to be used.
+
+#Optional clean-up:
+#
+#  make -f Makefile_SEreadPreparation-LABEL cleanup
+
+#Please be careful while editing the Makefile as it is 'tab-sensitive'.
+#Typical customization should only involve apppropriate editing of the variables in the next section.
+
+##########################Variable Settings#####################################
+###
+#
+
+FASTQDIR       = ../../../downloads/DOWNLOADdir#	Replace DOWNLOADdir with the appropriate directory name
+SAMPLE         = LABEL#  Replace LABEL with an appropriate label
+
+READFILE      := chs_${SAMPLE:%=%.fastq}
+
+#
+# FASTQC
+FASTQC_OPTIONS    = --threads ${FQO-t} --extract
+#
+FQO-t      =        2#  number of files which can be processed simultaneously.
+
+#
+# TRIMMOMATIC options are explained in detail at http://www.usadellab.org/cms/index.php?page=trimmomatic
+#  and the linked manual.
+#  Here we show use of five Trimmomatic steps (in that order); to omit a step, leave the corresponding
+#  varible blank.
+#
+TRIMMOMATIC_STEPS =  ${ILLUMINACLIP} ${LEADING} ${SLIDINGWINDOW} ${TRAILING} ${CROP} ${MINLEN}
+ILLUMINACLIP      = ILLUMINACLIP:${TMO-a}:${TMO-i}#   Cut adapter and other illumina-specific sequences from the read.
+#ILLUMINACLIP      = #                                 Option left blank; appropriate for pre-clipped data.
+LEADING           = LEADING:${TMO-m}#                 Cut bases off the start of a read, if below a threshold quality.
+SLIDINGWINDOW     = SLIDINGWINDOW:${TMO-w}:${TMO-m}#  Performs a sliding window trimming approach. It starts scanning
+#                                                      at the 5‟ end and clips the read once the average quality within
+#                                                      the window falls below a threshold. 
+TRAILING          = TRAILING:${TMO-m}#                Cut bases off the end of a read, if below a threshold quality.
+CROP              = CROP:${TMO-c}#                    Reads are trimmed from the 3'-end to the specified length.  
+MINLEN            = MINLEN:${TMO-l}#                  Drop the read if it is below the specified length.
+
+
+#
+TMO-p      =                   -phred33#   [-phred33 | -phred64]: using phred + 33 or phred + 64 quality scores
+TMO-t      =                          8#   number of threads
+TMO-a      =  ${ADAPTORS}/TruSeq2-SE.fa#   ILLUMINACLIP path to a fasta file containing all the adapters, PCR sequences etc.
+TMO-i      =                    2:30:15#   ILLUMINACLIP <seed mismatches>:<palindrome clip threshold>:<simple clip threshold>
+TMO-w      =                          5#   number of bases to average across
+TMO-m      =                         20#   minimum quality required to keep a base
+TMO-c      =                         30#   number of based to keep from the 5'-end
+TMO-l      =                         25#   minimum length of reads to be kept
+
+
+#
+TAGDUSTOPTIONS = "-t 8 -dust 97 -fe 3"
+
+################################################################################
+### ! Typically there would be no need for further editing below this line ! ###
+##
+#
+
+##########################Makefile Execution####################################
+###
+##
+#
+
+CLEANREADS := ${READFILE:%.fastq=%_clean.fq}
+QUALCHKB   := ${READFILE:%.fastq=FastQCb/%_fastqc/fastqc_data.txt}
+QUALCHKA   := FastQCa/${SAMPLE}.fq_fastqc/fastqc_data.txt
+
+#
+all:	fastqcb ${CLEANREADS} dustedreads finalreads readsasfasta fastqca
+
+.PHONY:	show
+
+show:	
+	@echo ""
+	@echo "Show variables {for debugging; invoke with make -f Makefile_SEreadPreparation-template show}:"
+	@echo ""
+	@echo ${CLEANREADS}
+	@echo ""
+	@echo ${QUALCHKB}
+	@echo ""
+
+
+%.fastq:
+	ln -s ${FASTQDIR}/$*.fastq $*.fastq
+
+## 2. FastQC before ("B") trimming:
+#
+fastqcb:	FastQCbdir ${QUALCHKB}
+
+FastQCbdir:	
+ifeq ("$(wildcard ./FastQCb)","")
+	mkdir FastQCb
+endif
+
+FastQCb/%_fastqc/fastqc_data.txt:	%.fastq
+	${FASTQC}/fastqc  ${FASTQC_OPTIONS}  --outdir=FastQCb  $*.fastq
+
+
+## 3. Adapter removal and quality trimming with Trimmomatic:
+#
+%_clean.fq:	%.fastq
+	java -jar ${TRIMMOMATIC} SE ${TMO-p} -threads ${TMO-t} \
+		$*.fastq \
+		$*_clean.fq \
+		${TRIMMOMATIC_STEPS}
+
+
+## 4. Tagdust the trimmed reads to remove rRNA-matching reads:
+#
+dustedreads:	${SAMPLE}_dusted.fq
+
+%_dusted.fq:	${CLEANREADS}
+	tagdust -ref ${rRNAFILE} \
+		${TAGDUSTOPTIONS} -1 R:N -o $*_dusted \
+		${CLEANREADS} \
+		>& tagdust_log
+
+
+## 5. Get rid of the "dusted" label to simplify the output file names:
+#
+finalreads:     ${SAMPLE}.fq
+
+%.fq:	%_dusted.fq
+	\mv $*_dusted.fq $*.fq
+
+
+## 6. Convert the trimmed reads from fastq to fasta format:
+#
+readsasfasta:	${SAMPLE}.fa
+
+${SAMPLE}.fa:	${SAMPLE}.fq
+	${NGSUTILS} fastq-tofasta ${SAMPLE}.fq > ${SAMPLE}.fa
+
+
+## 7. FastQC after ("A") trimming:
+#
+fastqca:	FastQCadir ${QUALCHKA} ${QUALCHKA2}
+
+FastQCadir:	
+ifeq ("$(wildcard ./FastQCa)","")
+	mkdir FastQCa
+endif
+
+FastQCa/%.fq_fastqc/fastqc_data.txt:	%.fq
+	${FASTQC}/fastqc  ${FASTQC_OPTIONS}  --outdir=FastQCa  $*.fq
+
+
+## 8. Cleanup: remove intermediate files that are no longer needed
+#
+cleanup:
+	-\rm ${READFILE} ${READ2FILES} ${CLEANREADS}

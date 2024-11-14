@@ -1,0 +1,9 @@
+# To create the combined mm39/dm6 mouse/Drosophila genome bowtie2 index, you
+#  can simply execute the following command:
+#
+time bash ./0Record 
+
+# This assumes, the requisite files have been downloaded in the genomeMM39
+# and genomeDM6 directories.
+#
+# See comments in 0Record for details.

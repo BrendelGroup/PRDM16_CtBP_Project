@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+
+workdir=${PWD}/../..
+SIF=${workdir}/Tools/CTBPprj.sif
+
+
+#giving an alias for executing the singularity container
+alias rws="singularity exec -e -B${workdir} ${SIF}"
+
+
+
+RAW_DATA_dir=${workdir}/RNA_seq/2_PRDM16KO/1_Raw_Reads
+
+
+#This is a for loop that downloads the previously published RNA-seq raw data that we used for our paper
+#
+for acc in SRR6823714 SRR6823715 SRR6823716 SRR6823717 SRR6823718 SRR6823719 SRR6823720 SRR6823721 SRR6823738 SRR6823739 SRR6823740 SRR6823741 SRR6823742 SRR6823743 SRR6823744 SRR6823745 SRR6823722 SRR6823723 SRR6823724 SRR6823725 SRR6823726 SRR6823727 SRR6823728 SRR6823729 SRR6823746 SRR6823747 SRR6823748 SRR6823749 SRR6823750 SRR6823751 SRR6823752 SRR6823753
+do
+	echo ${acc} >> ${RAW_DATA_dir}/download.log
+	rws fasterq-dump ${acc} >> ${RAW_DATA_dir}/download.log 2>&1
+	echo -e "\n" >> ${RAW_DATA_dir}/download.log
+done
+
+
+# Move the raw data files to the "1_Raw_Reads" directory and rename them accordingly
+mv SRR* ${RAW_DATA_dir}
+
+cat ${RAW_DATA_dir}/SRR6823714.fastq ${RAW_DATA_dir}/SRR6823715.fastq > ${RAW_DATA_dir}/rns_PRDM16_PPCwt1.fastq
+
+cat ${RAW_DATA_dir}/SRR6823716.fastq ${RAW_DATA_dir}/SRR6823717.fastq > ${RAW_DATA_dir}/rns_PRDM16_PPCwt2.fastq
+
+cat ${RAW_DATA_dir}/SRR6823718.fastq ${RAW_DATA_dir}/SRR6823719.fastq > ${RAW_DATA_dir}/rns_PRDM16_PPCwt3.fastq
+
+cat ${RAW_DATA_dir}/SRR6823720.fastq ${RAW_DATA_dir}/SRR6823721.fastq > ${RAW_DATA_dir}/rns_PRDM16_PPCwt4.fastq
+
+cat ${RAW_DATA_dir}/SRR6823738.fastq ${RAW_DATA_dir}/SRR6823739.fastq > ${RAW_DATA_dir}/rns_PRDM16_PPCko1.fastq
+
+cat ${RAW_DATA_dir}/SRR6823740.fastq ${RAW_DATA_dir}/SRR6823741.fastq > ${RAW_DATA_dir}/rns_PRDM16_PPCko2.fastq
+
+cat ${RAW_DATA_dir}/SRR6823742.fastq ${RAW_DATA_dir}/SRR6823743.fastq > ${RAW_DATA_dir}/rns_PRDM16_PPCko3.fastq
+
+cat ${RAW_DATA_dir}/SRR6823744.fastq ${RAW_DATA_dir}/SRR6823745.fastq > ${RAW_DATA_dir}/rns_PRDM16_PPCko4.fastq
+
+cat ${RAW_DATA_dir}/SRR6823722.fastq ${RAW_DATA_dir}/SRR6823723.fastq > ${RAW_DATA_dir}/rns_PRDM16_TPCwt1.fastq
+
+cat ${RAW_DATA_dir}/SRR6823724.fastq ${RAW_DATA_dir}/SRR6823725.fastq > ${RAW_DATA_dir}/rns_PRDM16_TPCwt2.fastq
+
+cat ${RAW_DATA_dir}/SRR6823726.fastq ${RAW_DATA_dir}/SRR6823727.fastq > ${RAW_DATA_dir}/rns_PRDM16_TPCwt3.fastq
+
+cat ${RAW_DATA_dir}/SRR6823728.fastq ${RAW_DATA_dir}/SRR6823729.fastq > ${RAW_DATA_dir}/rns_PRDM16_TPCwt4.fastq
+
+cat ${RAW_DATA_dir}/SRR6823746.fastq ${RAW_DATA_dir}/SRR6823747.fastq > ${RAW_DATA_dir}/rns_PRDM16_TPCko1.fastq
+
+cat ${RAW_DATA_dir}/SRR6823748.fastq ${RAW_DATA_dir}/SRR6823749.fastq > ${RAW_DATA_dir}/rns_PRDM16_TPCko2.fastq
+
+cat ${RAW_DATA_dir}/SRR6823750.fastq ${RAW_DATA_dir}/SRR6823751.fastq > ${RAW_DATA_dir}/rns_PRDM16_TPCko3.fastq
+
+cat ${RAW_DATA_dir}/SRR6823752.fastq ${RAW_DATA_dir}/SRR6823753.fastq > ${RAW_DATA_dir}/rns_PRDM16_TPCko4.fastq
+
+
+\rm ${RAW_DATA_dir}/SRR*

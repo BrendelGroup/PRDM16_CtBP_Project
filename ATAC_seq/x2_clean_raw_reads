@@ -11,13 +11,12 @@ SIF=${workdir}/Tools/CTBPprj.sif
 alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 
-rawData_dir=${workdir}/ChIP_seq/1_Raw_Reads
-cleanReads_dir=${workdir}/ChIP_seq/2_Cleaning_Reads
+rawData_dir=${workdir}/ATAC_seq/1_Raw_Reads
+cleanReads_dir=${workdir}/ATAC_seq/2_Cleaning_Reads
 
 
 cd ${cleanReads_dir}
-rws bash ${cleanReads_dir}/xqctrl_SE
-rws bash ${cleanReads_dir}/xqctrl_PE
+rws bash ${cleanReads_dir}/xqctrl_ats_e
 
 
 # Summary:

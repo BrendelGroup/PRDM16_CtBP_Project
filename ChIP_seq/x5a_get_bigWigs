@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+
+workdir=${PWD}/..
+SIF=${workdir}/Tools/chs_analysis.sif
+
+
+#giving an alias for executing the singularity container
+alias rws="singularity exec -e -B${workdir} ${SIF}"
+
+
+
+#Generating bigWig files with deepTools bamCoverage
+
+BAM_files_dir=${workdir}/ChIP_seq/3_Alignment/bt2VSmm39
+ref_dir=${workdir}/Genomes/genomeMM39
+blacklist_regions=${ref_dir}/mm39.excluderanges.bed
+
+OUTDIR_BW=./5_bigWigs
+
+
+for samplePE in CTBP2_e_1 CTBP2_e_2 HDAC1_e_1 HDAC1_e_2 LSD1_e_1 LSD1_e_2
+do
+   echo ${samplePE}':'
+   echo ''
+   rws bamCoverage \
+         -b ${BAM_files_dir}/${samplePE}.bam \
+         -o ${OUTDIR_BW}/${samplePE}.bw \
+         --numberOfProcessors max \
+         --binSize 10 \
+         --blackListFileName ${blacklist_regions} \
+         --extendReads \
+         --smoothLength 30 \
+         --centerReads
+   echo ''
+   echo ''
+done
+
+
+for sampleSE in H3K4me3_e_1 H3K4me3_e_2 CTCF_wb_1 CTCF_wb_2 PRDM16_e_1 PRDM16_e_2 H3K27ac_e_1 H3K27ac_e_2 H3K4me1_e_1 H3K4me1_e_2
+do
+   echo ${sampleSE}':'
+   echo ''
+   rws bamCoverage \
+         -b ${BAM_files_dir}/${sampleSE}.bam \
+         -o ${OUTDIR_BW}/${sampleSE}.bw \
+         --numberOfProcessors max \
+         --binSize 10 \
+         --blackListFileName ${blacklist_regions} \
+         --extendReads 180 \
+         --smoothLength 30 \
+         --centerReads
+   echo ''
+   echo ''
+done    

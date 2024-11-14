@@ -52,3 +52,6 @@ time bash ./xbuildSTARindex
 #real	30m27.137s
 #user	242m7.815s
 #sys	3m54.602s
+
+
+wget https://hgdownload.soe.ucsc.edu/goldenPath/mm39/bigZips/mm39.chrom.sizes

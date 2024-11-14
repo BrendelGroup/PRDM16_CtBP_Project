@@ -29,7 +29,7 @@ do
          --outdir ${OUTDIR_MACS3} \
          -n ${samplePEie3} \
          -q 0.05 \
-	 >& ${samplePEie3}_macs3.log &
+	 >& ${OUTDIR_MACS3}/${samplePEie3}_macs3.log &
 done
 wait
 for samplePEie3 in ${SAMPLES_PE_ie3}
@@ -44,7 +44,7 @@ done
          --outdir ${OUTDIR_MACS3} \
          -n CTBP2_e_1 \
          -q 0.01 \
-	 >& CTBP2_e_1_macs3.log
+	 >& ${OUTDIR_MACS3}/CTBP2_e_1_macs3.log
    mkdir ${OUTDIR_MACS3}/CTBP2_e_1
    mv ${OUTDIR_MACS3}/CTBP2_e_1_* ${OUTDIR_MACS3}/CTBP2_e_1
  
@@ -60,7 +60,7 @@ do
          --outdir ${OUTDIR_MACS3} \
          -n ${samplePEie4} \
          -q 0.05 \
-	 >& ${samplePEie4}_macs3.log &
+	 >& ${OUTDIR_MACS3}/${samplePEie4}_macs3.log &
 done
 wait
 for samplePEie4 in ${SAMPLES_PE_ie4}
@@ -75,7 +75,7 @@ done
          --outdir ${OUTDIR_MACS3} \
          -n CTBP2_e_2 \
          -q 0.01 \
-	 >& CTBP2_e_2_macs3.log
+	 >& ${OUTDIR_MACS3}/CTBP2_e_2_macs3.log
    mkdir ${OUTDIR_MACS3}/CTBP2_e_2
    mv ${OUTDIR_MACS3}/CTBP2_e_2_* ${OUTDIR_MACS3}/CTBP2_e_2
    
@@ -92,7 +92,7 @@ do
          -q 0.05 \
          --nomodel \
          --extsize 180 \
-	 >& ${sampleSEtf}_macs3.log &
+	 >& ${OUTDIR_MACS3}/${sampleSEtf}_macs3.log &
 done
 wait
 for sampleSEtf in ${SAMPLES_SE_TF}
@@ -115,7 +115,7 @@ do
          -q 0.05 \
          --nomodel \
          --extsize 180 \
-	 >& ${sampleSEhistone}_macs3.log &
+	 >& ${OUTDIR_MACS3}/${sampleSEhistone}_macs3.log &
 done
 wait
 for sampleSEhistone in ${SAMPLES_SE_Histone}
@@ -136,7 +136,7 @@ do
          --outdir ${OUTDIR_MACS3} \
          -n ${samplePEin3} \
          -q 0.01 \
-	 >& ${samplePEin3}_macs3.log &
+	 >& ${OUTDIR_MACS3}/${samplePEin3}_macs3.log &
 done
 wait
 for samplePEin3 in ${SAMPLES_PE_in3}

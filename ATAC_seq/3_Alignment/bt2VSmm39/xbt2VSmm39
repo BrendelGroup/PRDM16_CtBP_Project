@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+
+# 1. Mapping paired-end samples:
+#
+for exprmnt in ats_e_1 ats_e_2
+do
+  echo -e "\n\nNow running:\n./xmapPEbt2 ${exprmnt} >& log_${exprmnt}"
+  time ./xmapPEbt2 ${exprmnt} >& log_${exprmnt}
+done

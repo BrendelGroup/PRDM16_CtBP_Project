@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+
+ln -s PRDM16_PPCko1/PRDM16_PPCko1.fq ./
+ln -s PRDM16_PPCko2/PRDM16_PPCko2.fq ./
+ln -s PRDM16_PPCko3/PRDM16_PPCko3.fq ./
+ln -s PRDM16_PPCko4/PRDM16_PPCko4.fq ./
+ln -s PRDM16_PPCwt1/PRDM16_PPCwt1.fq ./
+ln -s PRDM16_PPCwt2/PRDM16_PPCwt2.fq ./
+ln -s PRDM16_PPCwt3/PRDM16_PPCwt3.fq ./
+ln -s PRDM16_PPCwt4/PRDM16_PPCwt4.fq ./
+ln -s PRDM16_TPCko1/PRDM16_TPCko1.fq ./
+ln -s PRDM16_TPCko2/PRDM16_TPCko2.fq ./
+ln -s PRDM16_TPCko3/PRDM16_TPCko3.fq ./
+ln -s PRDM16_TPCko4/PRDM16_TPCko4.fq ./
+ln -s PRDM16_TPCwt1/PRDM16_TPCwt1.fq ./
+ln -s PRDM16_TPCwt2/PRDM16_TPCwt2.fq ./
+ln -s PRDM16_TPCwt3/PRDM16_TPCwt3.fq ./
+ln -s PRDM16_TPCwt4/PRDM16_TPCwt4.fq ./

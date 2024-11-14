@@ -14,6 +14,7 @@ alias rws="singularity exec -e -B${workdir} ${SIF}"
 RAW_DATA_dir=${workdir}/ChIP_seq/1_Raw_Reads
 
 
+
 #This is a for loop that downloads the previously published ChIP-seq raw data that we used for our paper
 #
 for acc in SRR6823762 SRR6823763 SRR6823764 SRR6823765 SRR6823766 SRR6823767 SRR6823768 SRR6823769 SRR6823782 SRR6823783 SRR6823784 SRR6823785 SRR6823786 SRR6823787 SRR6823788 SRR6823789 SRR6823790 SRR6823791 SRR6823774 SRR6823775 SRR6823776 SRR6823777 SRR3651517 SRR3651670 SRR3651516 SRR3651669 SRR578278 SRR489727 SRR578279 SRR578284 
@@ -23,6 +24,7 @@ do
 	echo -e "\n" >> ${RAW_DATA_dir}/download.log
 done
 echo -e "\n" >> ${RAW_DATA_dir}/download.log
+
 
 # Move the raw data files to the "1_Raw_Reads" directory and rename them accordingly
 mv SRR* ${RAW_DATA_dir}

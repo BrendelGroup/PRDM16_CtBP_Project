@@ -1,0 +1,8 @@
+# In this directory (ATAC_seq), the "0Record" file will execute all the bash scripts that analysis the ATAC-seq data starting from downloading the raw reads up until generating the bigWig files 
+
+#All you have to do to perform the ATAC-seq analysis until the bigWig files generation is to make sure you are inside the "ATAC_seq" directory in the terminal and execute:
+
+bash ./0Record 
+
+
+# See comments in 0Record for more details on the bash scripts.

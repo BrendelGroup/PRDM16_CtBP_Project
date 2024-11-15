@@ -1,9 +1,9 @@
 shopt -s expand_aliases
 
-# Specify the working directory and the CTBPprj singularity image file:
+# Specify the working directory and the PRDM16_CtBP_Project singularity image file:
 #
 workdir=${PWD}/../../..
-SIF=${workdir}/Tools/CTBPprj.sif
+SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
 
 alias rws="singularity exec -e -B${workdir} $SIF"
 

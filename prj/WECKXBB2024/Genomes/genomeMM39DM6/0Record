@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+# Run this script from within the CTBPprj singularity container, e.g.
+# with "rws" specified as follows:
+#
+workdir=${PWD}/../..
+prjSIF=${workdir}/Tools/CTBPprj.sif
+
+alias rws="singularity exec -e -B${workdir} ${prjSIF}"
+
+
+# 1. Create a combined mm39/dm6 genome file (dm6 for spike-in normalization in some of
+#    the ChIPseq experiments); respective chromosome sequences are identified by the
+#    prefixes MM39 and DM6, respectively.
+#
+cat ../genomeMM39/BSgenome.Mmusculus.UCSC.mm39chrs.fa   | sed -e "s/^>/>MM39/;"  > MM39DM6.fa
+cat ../genomeDM6/BSgenome.Dmelanogaster.UCSC.dm6chrs.fa | sed -e "s/^>/>DM6/;"  >> MM39DM6.fa
+
+
+# 2. Build the combined bowtie2 index:
+#
+rws bowtie2-build --threads 16 MM39DM6.fa MM39DM6

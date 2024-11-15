@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+
+
+DOWNLOADdir=../1_Raw_Reads
+NTHREADS=4
+
+for i in INPUT_e_3 CTBP2_e_1 HDAC1_e_1
+do
+  mkdir ./${i}
+  cd ./${i}
+  \cp ../Makefile_PEreadPreparation_template ./Makefile_PEreadPreparation_${i}
+  sed -i "s/SAMPLE         = LABEL/SAMPLE         = $i/;" ./Makefile_PEreadPreparation_${i}
+  sed -i "s#FASTQDIR       = ../../../downloads/DOWNLOADdir#FASTQDIR       = ../${DOWNLOADdir}#;" ./Makefile_PEreadPreparation_${i}
+  (make -j $NTHREADS -I../ -I../../ -f ./Makefile_PEreadPreparation_${i} >& ./err_${i}) &
+  cd ..
+done
+wait
+
+
+DOWNLOADdir=../1_Raw_Reads
+NTHREADS=4
+
+for i in INPUT_e_4 CTBP2_e_2 HDAC1_e_2 LSD1_e_1 LSD1_e_2
+do
+  mkdir ./${i}
+  cd ./${i}
+  \cp ../Makefile_PEreadPreparation_template ./Makefile_PEreadPreparation_${i}
+  sed -i "s/SAMPLE         = LABEL/SAMPLE         = $i/;" ./Makefile_PEreadPreparation_${i}
+  sed -i "s#FASTQDIR       = ../../../downloads/DOWNLOADdir#FASTQDIR       = ../${DOWNLOADdir}#;" ./Makefile_PEreadPreparation_${i}
+  (make -j $NTHREADS -I../ -I../../ -f ./Makefile_PEreadPreparation_${i} >& ./err_${i}) &
+  cd ..
+done
+wait
+
+
+DOWNLOADdir=../1_Raw_Reads
+NTHREADS=4
+
+for i in INPUT_n_3 CTBP2ko_n_1 CTBP2ko_n_2 CTBP2wt_n_1 CTBP2wt_n_2
+do
+  mkdir ./${i}
+  cd ./${i}
+  \cp ../Makefile_PEreadPreparation_template ./Makefile_PEreadPreparation_${i}
+  sed -i "s/SAMPLE         = LABEL/SAMPLE         = $i/;" ./Makefile_PEreadPreparation_${i}
+  sed -i "s#FASTQDIR       = ../../../downloads/DOWNLOADdir#FASTQDIR       = ../${DOWNLOADdir}#;" ./Makefile_PEreadPreparation_${i}
+  (make -j $NTHREADS -I../ -I../../ -f ./Makefile_PEreadPreparation_${i} >& ./err_${i}) &
+  cd ..
+done
+wait

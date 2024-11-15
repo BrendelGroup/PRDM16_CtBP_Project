@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+# Run this script from within the CTBPprj singularity container, e.g.
+# with "rws" specified as follows:
+#
+workdir=${PWD}/../..
+prjSIF=${workdir}/Tools/CTBPprj.sif
+
+alias rws="singularity exec -e -B${workdir} ${prjSIF}"
+
+
+# Genome files preparation.
+# For details, see the comments in the R scripts.
+#
+
+# Get the genome files:
+#
+time rws Rscript xpgMmus39-Step1.R >& log1
+
+#real	0m43.521s
+#user	0m37.405s
+#sys	0m6.031s
+
+
+# Build the bowtie2 index:
+#
+time rws Rscript xpgMmus39-Step2.R >& log2
+
+#real	61m54.390s
+#user	790m10.554s
+#sys	3m48.515s
+
+
+# Get and save the genome annotation in UCSC style and create a gene name/ID table:
+#
+rws bash xpgMmus39-Step3.sh
+
+# ... the script also creates Mmus_rRNA.fa (for pulling out reads matching rRNAs).
+
+
+# Build the STAR index:
+#
+wget -O - https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/chromAlias.txt.gz | gunzip > mm39_chromAlias.txt
+wget https://hgdownload.soe.ucsc.edu/goldenPath/mm39/bigZips/genes/mm39.ncbiRefSeq.gtf.gz
+gunzip mm39.ncbiRefSeq.gtf.gz
+mv mm39.ncbiRefSeq.gtf mm39.gtf
+
+time bash ./xbuildSTARindex
+
+#real	30m27.137s
+#user	242m7.815s
+#sys	3m54.602s
+
+
+wget https://hgdownload.soe.ucsc.edu/goldenPath/mm39/bigZips/mm39.chrom.sizes

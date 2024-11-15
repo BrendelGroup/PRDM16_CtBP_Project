@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+
+# Mapping the cleaned raw reads against the MM39 reference genome
+cd ./3_Alignment
+bash ./xmapRNAseqReads
+bash ./xln
+cd ..

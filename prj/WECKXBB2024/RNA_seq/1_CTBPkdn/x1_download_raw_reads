@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+
+workdir=${PWD}/../..
+SIF=${workdir}/Tools/CTBPprj.sif
+
+
+#giving an alias for executing the singularity container
+alias rws="singularity exec -e -B${workdir} ${SIF}"
+
+
+RAW_DATA_dir=${workdir}/RNA_seq/1_CTBPkdn/1_Raw_Reads
+
+
+: '
+#This is a for loop that downloads our published RNA-seq raw data that we generated for our paper
+#
+
+for acc in SRR29778929 SRR29778928 SRR29778927 SRR29778926 SRR29778924 SRR29778923 SRR29778922 SRR29778921
+do
+	echo ${acc} >> ${RAW_DATA_dir}/download.log
+	rws fasterq-dump ${acc} >> ${RAW_DATA_dir}/download.log 2>&1
+	echo -e "\n" >> ${RAW_DATA_dir}/download.log
+done
+
+# Move the raw data files to the "1_Raw_Reads" directory and rename them accordingly
+mv SRR* ${RAW_DATA_dir}
+
+mv ${RAW_DATA_dir}/SRR29778929_1.fastq ${RAW_DATA_dir}/rns_CTBPctl_1_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778929_2.fastq ${RAW_DATA_dir}/rns_CTBPctl_2_R1.fastq
+
+mv ${RAW_DATA_dir}/SRR29778928_1.fastq ${RAW_DATA_dir}/rns_CTBPctl_2_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778928_2.fastq ${RAW_DATA_dir}/rns_CTBPctl_2_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778927_1.fastq ${RAW_DATA_dir}/rns_CTBPctl_3_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778927_2.fastq ${RAW_DATA_dir}/rns_CTBPctl_3_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778926_1.fastq ${RAW_DATA_dir}/rns_CTBPctl_4_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778926_2.fastq ${RAW_DATA_dir}/rns_CTBPctl_4_R2.fastq
+
+
+mv ${RAW_DATA_dir}/SRR29778924_1.fastq ${RAW_DATA_dir}/rns_CTBPkdn_1_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778924_2.fastq ${RAW_DATA_dir}/rns_CTBPkdn_1_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778923_1.fastq ${RAW_DATA_dir}/rns_CTBPkdn_2_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778923_2.fastq ${RAW_DATA_dir}/rns_CTBPkdn_2_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778922_1.fastq ${RAW_DATA_dir}/rns_CTBPkdn_3_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778922_2.fastq ${RAW_DATA_dir}/rns_CTBPkdn_3_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR29778921_1.fastq ${RAW_DATA_dir}/rns_CTBPkdn_4_R1.fastq
+mv ${RAW_DATA_dir}/SRR29778921_2.fastq ${RAW_DATA_dir}/rns_CTBPkdn_4_R2.fastq
+'

@@ -1,0 +1,146 @@
+#!/bin/bash
+#
+shopt -s expand_aliases
+
+
+workdir=${PWD}/..
+SIF=${workdir}/Tools/CTBPprj.sif
+
+
+#giving an alias for executing the singularity container
+alias rws="singularity exec -e -B${workdir} ${SIF}"
+
+
+
+#Call peaks with MACS3
+BAM_files_dir=${workdir}/ChIP_seq/3_Alignment/bt2VSmm39
+BAM_NSC_dir=${workdir}/ChIP_seq/3_Alignment/bt2VSmm39dm6
+OUTDIR_MACS3=./4_Peaks
+
+
+SAMPLES_PE_ie3="HDAC1_e_1"
+ie3="INPUT_e_3.bam"
+for samplePEie3 in ${SAMPLES_PE_ie3}
+do
+   rws macs3 callpeak -f BAMPE \
+         -t ${BAM_files_dir}/${samplePEie3}.bam \
+         -c ${BAM_files_dir}/${ie3} \
+         -g mm \
+         --outdir ${OUTDIR_MACS3} \
+         -n ${samplePEie3} \
+         -q 0.05 \
+	 >& ${OUTDIR_MACS3}/${samplePEie3}_macs3.log &
+done
+wait
+for samplePEie3 in ${SAMPLES_PE_ie3}
+do
+   mkdir ${OUTDIR_MACS3}/${samplePEie3}
+   mv ${OUTDIR_MACS3}/${samplePEie3}_* ${OUTDIR_MACS3}/${samplePEie3}
+done
+   rws macs3 callpeak -f BAMPE \
+         -t ${BAM_files_dir}/CTBP2_e_1.bam \
+         -c ${BAM_files_dir}/${ie3} \
+         -g mm \
+         --outdir ${OUTDIR_MACS3} \
+         -n CTBP2_e_1 \
+         -q 0.01 \
+	 >& ${OUTDIR_MACS3}/CTBP2_e_1_macs3.log
+   mkdir ${OUTDIR_MACS3}/CTBP2_e_1
+   mv ${OUTDIR_MACS3}/CTBP2_e_1_* ${OUTDIR_MACS3}/CTBP2_e_1
+ 
+ 
+SAMPLES_PE_ie4="HDAC1_e_2 LSD1_e_1 LSD1_e_2"
+ie4="INPUT_e_4.bam"
+for samplePEie4 in ${SAMPLES_PE_ie4}
+do
+   rws macs3 callpeak -f BAMPE \
+         -t ${BAM_files_dir}/${samplePEie4}.bam \
+         -c ${BAM_files_dir}/${ie4} \
+         -g mm \
+         --outdir ${OUTDIR_MACS3} \
+         -n ${samplePEie4} \
+         -q 0.05 \
+	 >& ${OUTDIR_MACS3}/${samplePEie4}_macs3.log &
+done
+wait
+for samplePEie4 in ${SAMPLES_PE_ie4}
+do
+   mkdir ${OUTDIR_MACS3}/${samplePEie4}
+   mv ${OUTDIR_MACS3}/${samplePEie4}_* ${OUTDIR_MACS3}/${samplePEie4}
+done
+   rws macs3 callpeak -f BAMPE \
+         -t ${BAM_files_dir}/CTBP2_e_2.bam \
+         -c ${BAM_files_dir}/${ie4} \
+         -g mm \
+         --outdir ${OUTDIR_MACS3} \
+         -n CTBP2_e_2 \
+         -q 0.01 \
+	 >& ${OUTDIR_MACS3}/CTBP2_e_2_macs3.log
+   mkdir ${OUTDIR_MACS3}/CTBP2_e_2
+   mv ${OUTDIR_MACS3}/CTBP2_e_2_* ${OUTDIR_MACS3}/CTBP2_e_2
+   
+   
+SAMPLES_SE_TF="PRDM16_e_1 PRDM16_e_2 CTCF_wb_1 CTCF_wb_2"
+for sampleSEtf in ${SAMPLES_SE_TF}
+do
+   rws macs3 callpeak -f BAM \
+         -t ${BAM_files_dir}/${sampleSEtf}.bam \
+         -c ${BAM_files_dir}/INPUT_${sampleSEtf}.bam \
+         -g mm \
+         --outdir ${OUTDIR_MACS3} \
+         -n ${sampleSEtf} \
+         -q 0.05 \
+         --nomodel \
+         --extsize 180 \
+	 >& ${OUTDIR_MACS3}/${sampleSEtf}_macs3.log &
+done
+wait
+for sampleSEtf in ${SAMPLES_SE_TF}
+do
+   mkdir ${OUTDIR_MACS3}/${sampleSEtf}
+   mv ${OUTDIR_MACS3}/${sampleSEtf}_* ${OUTDIR_MACS3}/${sampleSEtf}
+done
+
+
+SAMPLES_SE_Histone="H3K4me3_e_1 H3K4me3_e_2 H3K4me1_e_1 H3K4me1_e_2 H3K27ac_e_1 H3K27ac_e_2"
+for sampleSEhistone in ${SAMPLES_SE_Histone}
+do
+   rws macs3 callpeak -f BAM \
+         -t ${BAM_files_dir}/${sampleSEhistone}.bam \
+         -c ${BAM_files_dir}/INPUT_${sampleSEhistone}.bam \
+         --broad \
+         -g mm \
+         --outdir ${OUTDIR_MACS3} \
+         -n ${sampleSEhistone} \
+         -q 0.05 \
+         --nomodel \
+         --extsize 180 \
+	 >& ${OUTDIR_MACS3}/${sampleSEhistone}_macs3.log &
+done
+wait
+for sampleSEhistone in ${SAMPLES_SE_Histone}
+do
+   mkdir ${OUTDIR_MACS3}/${sampleSEhistone}
+   mv ${OUTDIR_MACS3}/${sampleSEhistone}_* ${OUTDIR_MACS3}/${sampleSEhistone}
+done
+
+
+SAMPLES_PE_in3="CTBP2wt_n_1 CTBP2wt_n_2"
+in3="INPUT_n_3.mm39.bam"
+for samplePEin3 in ${SAMPLES_PE_in3}
+do
+   rws macs3 callpeak -f BAMPE \
+         -t ${BAM_NSC_dir}/${samplePEin3}.mm39.bam \
+         -c ${BAM_NSC_dir}/${in3} \
+         -g mm \
+         --outdir ${OUTDIR_MACS3} \
+         -n ${samplePEin3} \
+         -q 0.01 \
+	 >& ${OUTDIR_MACS3}/${samplePEin3}_macs3.log &
+done
+wait
+for samplePEin3 in ${SAMPLES_PE_in3}
+do
+   mkdir ${OUTDIR_MACS3}/${samplePEin3}
+   mv ${OUTDIR_MACS3}/${samplePEin3}_* ${OUTDIR_MACS3}/${samplePEin3}
+done

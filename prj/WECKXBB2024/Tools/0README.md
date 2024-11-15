@@ -12,6 +12,8 @@ Sample usage (our workflow scripts include similar alias lines):
 ```bash
 alias rws="singularity exec -e -B ${PWD}/..  ${PWD}/PRDM16_CtBP_Project.sif"
 rws which bedtools
+rws which deeptools
+rws gth -help
 ```
 
 Of course this assumes that you have [Apptainer/Singularity](https://apptainer.org/) installed on your system.

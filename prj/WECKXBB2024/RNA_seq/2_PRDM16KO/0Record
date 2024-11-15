@@ -2,11 +2,11 @@
 #
 shopt -s expand_aliases
 
-# Run this script from within the CTBPprj singularity container, e.g.
+# Run this script from within the PRDM16_CtBP_Project singularity container, e.g.
 # with "rws" specified as follows:
 #
 workdir=${PWD}/../..
-SIF=${workdir}/Tools/CTBPprj.sif
+SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
 
 #giving an alias for executing the singularity container
 

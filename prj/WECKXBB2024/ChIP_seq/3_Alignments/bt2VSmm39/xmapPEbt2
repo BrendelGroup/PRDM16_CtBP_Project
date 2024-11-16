@@ -2,7 +2,7 @@
 #
 
 bt2idx=../../../Genomes/genomeMM39/BSgenome.Mmusculus.UCSC.mm39chrs
-FASTQdir=../../2_Cleaning_Reads
+FASTQdir=../../2_Clean_Reads
 bt2_threads=16
 st_threads=16
 SAMPLE=$1

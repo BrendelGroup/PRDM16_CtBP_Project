@@ -12,7 +12,7 @@ alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 
 rawData_dir=${workdir}/ChIP_seq/1_Raw_Reads
-cleanReads_dir=${workdir}/ChIP_seq/2_Cleaning_Reads
+cleanReads_dir=${workdir}/ChIP_seq/2_Clean_Reads
 
 
 cd ${cleanReads_dir}

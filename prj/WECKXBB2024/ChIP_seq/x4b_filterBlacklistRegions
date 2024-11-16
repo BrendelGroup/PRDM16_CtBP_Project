@@ -11,7 +11,7 @@ SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
 alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 ref_dir=${workdir}/Genomes/genomeMM39
-aln_dir=${workdir}/ChIP_seq/3_Alignment
+aln_dir=${workdir}/ChIP_seq/3_Alignments
 peaks_dir=${workdir}/ChIP_seq/4_Peaks
 blacklist_regions=${ref_dir}/mm39.excluderanges.bed
 

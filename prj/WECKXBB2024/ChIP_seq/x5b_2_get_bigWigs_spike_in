@@ -4,7 +4,7 @@ shopt -s expand_aliases
 
 
 workdir=${PWD}/..
-SIF=${workdir}/Tools/chs_analysis.sif
+SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
 
 
 #giving an alias for executing the singularity container
@@ -14,7 +14,7 @@ alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 #Generating bigWig files with deepTools bamCoverage
 
-BAM_NSC_dir=${workdir}/ChIP_seq/3_Alignment/bt2VSmm39dm6
+BAM_NSC_dir=${workdir}/ChIP_seq/3_Alignments/bt2VSmm39dm6
 ref_dir=${workdir}/Genomes/genomeMM39
 blacklist_regions=${ref_dir}/mm39.excluderanges.bed
 

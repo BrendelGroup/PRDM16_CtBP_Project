@@ -1,0 +1,300 @@
+bootstrap: docker
+From: fedora:38
+
+%help
+    This container provides working software versions for the CTBP project.
+
+%files
+    xinstall-edirect /opt/xinstall-edirect
+    ChIPQC_1.41.0.tar.gz /opt/ChIPQC_1.41.0.tar.gz
+    BSgenome.Mmusculus.UCSC.mm39chrs.fa /opt/BSgenome.Mmusculus.UCSC.mm39chrs.fa
+    mm39.gtf /opt/mm39.gtf
+    xcountSAMtypes /usr/local/bin/xcountSAMtypes
+
+%post
+    dnf -y update
+    dnf -y install bc bzip2 findutils git lftp mlocate rsync tcsh unzip zip wget which
+    dnf -y install gcc-c++ make automake cmake ruby
+    dnf -y install glibc-static
+    dnf -y install boost boost-devel
+    dnf -y install cairo-devel pango-devel zlib-devel
+    dnf -y install libnsl
+    dnf -y install python python-biopython python3-wheel python-wheel-wheel python3-virtualenv python3-pip
+    dnf -y install python3-h5py python3-devel python3-setuptools
+    dnf -y install pandoc
+    dnf -y install java-11-openjdk java-11-openjdk-devel ant
+    dnf -y install perl-App-cpanminus
+    dnf -y install curl libcurl libcurl-devel ncurses ncurses-devel libjpeg libjpeg-devel libtiff libtiff-devel
+    dnf -y install openssl openssl-devel
+
+
+### Read quality control
+
+    echo 'Installing FastQC from http://www.bioinformatics.babraham.ac.uk/projects/fastqc/ '
+    cd /opt
+    wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.12.1.zip
+    cpanm install FindBin
+    unzip fastqc_v0.12.1.zip
+    chmod +x FastQC/fastqc
+    \rm fastqc_v0.12.1.zip
+
+    echo 'Installing Trimmomatic from http://www.usadellab.org/cms/index.php?page=trimmomatic '
+    cd /opt
+    wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
+    unzip Trimmomatic-0.39.zip
+    \rm Trimmomatic-0.39.zip
+    echo '#!/bin/bash' > /usr/local/bin/trimmomatic
+    sed -i -e '$a #\n\n/java -Xmx16G -jar /opt/Trimmomatic-0.39/trimmomatic-0.39.jar "$@"' /usr/local/bin/trimmomatic
+    chmod a+x /usr/local/bin/trimmomatic
+
+
+    echo 'Installing TagDust from https://sourceforge.net/projects/tagdust/files/latest/download '
+    cd /opt
+    wget -O tagdust-2.33.tar.gz 'https://sourceforge.net/projects/tagdust/files/tagdust-2.33.tar.gz/download'
+    tar -xzf tagdust-2.33.tar.gz
+    \rm  *tagdust-2.33.tar.gz*
+    cd tagdust-2.33/
+    ./configure CFLAGS="-g -fcommon"
+    make
+    make install
+
+
+
+
+### Read manipulation
+
+    echo 'Installing SRAtoolkit from http://www.ncbi.nlm.nih.gov/books/NBK158900/ '
+    cd /opt
+    wget http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/3.1.0/sratoolkit.3.1.0-ubuntu64.tar.gz
+    tar -xzf sratoolkit.3.1.0-ubuntu64.tar.gz
+    \rm  sratoolkit.3.1.0-ubuntu64.tar.gz
+
+    echo 'Installing UMI-tools from https://github.com/CGATOxford/UMI-tools '
+    cd /opt
+    git clone https://github.com/CGATOxford/UMI-tools.git
+    cd UMI-tools/
+    python setup.py install
+
+    echo 'Installing HTSlib from http://www.htslib.org/ '
+    cd /opt
+    git clone https://github.com/samtools/htslib.git htslib
+    cd htslib
+    git submodule update --init --recursive
+    make && make install && make clean
+
+    echo 'Installing Samtools from http://www.htslib.org/ '
+    cd /opt
+    git clone https://github.com/samtools/samtools.git samtools
+    cd samtools
+    make && make install && make clean
+
+    echo 'Installing SeqKit from https://github.com/shenwei356/seqkit '
+    cd /opt
+    wget https://github.com/shenwei356/seqkit/releases/download/v2.8.1/seqkit_linux_amd64.tar.gz
+    tar -xzf seqkit_linux_amd64.tar.gz 
+    chmod a+x seqkit
+    mv seqkit /usr/local/bin
+    \rm seqkit_linux_amd64.tar.gz
+
+    echo 'Installing UCSC Tools from http://hgdownload.soe.ucsc.edu/admin/exe/ '
+    cd /opt
+    mkdir ucsc
+    cd ucsc
+    rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/ ./
+
+
+### Read mapping
+
+    echo 'Installing BWA '
+    cd /opt
+    git clone https://github.com/lh3/bwa.git
+    cd bwa
+    make
+    cp bwa /usr/local/bin/
+
+    echo 'Installing minimap2 from https://github.com/lh3/minimap2 '
+    cd /opt
+    wget https://github.com/lh3/minimap2/releases/download/v2.28/minimap2-2.28_x64-linux.tar.bz2
+    tar -jxvf minimap2-2.28_x64-linux.tar.bz2
+    cp minimap2-2.28_x64-linux/minimap2 /usr/local/bin
+
+    echo 'Installing Bowtie2 version 2.5.3 '
+    cd /opt
+    wget https://github.com/BenLangmead/bowtie2/releases/download/v2.5.3/bowtie2-2.5.3-linux-x86_64.zip
+    unzip bowtie2-2.5.3-linux-x86_64.zip 
+    \rm bowtie2-2.5.3-linux-x86_64.zip
+
+    echo 'Installing hisat2 '
+    cd /opt
+    wget https://cloud.biohpc.swmed.edu/index.php/s/oTtGWbWjaxsQ2Ho/download
+    mv download hisat2-2.2.1.zip
+    unzip hisat2-2.2.1.zip 
+    \rm hisat2-2.2.1.zip 
+
+    echo 'Installing STAR from https://github.com/alexdobin/STAR '
+    cd /opt
+    git clone https://github.com/alexdobin/STAR
+
+    echo 'Installing bedops from https://github.com/bedops '
+    cd /opt
+    mkdir bedops && cd bedops
+    wget https://github.com/bedops/bedops/releases/download/v2.4.41/bedops_linux_x86_64-v2.4.41.tar.bz2
+    tar jxvf bedops_linux_x86_64-v2.4.41.tar.bz2
+    # ... creates bin directory with tool binaries; added to path below
+    \rm bedops_linux_x86_64-v2.4.41.tar.bz2
+
+    echo 'Installing bedtools from https://github.com/arq5x/bedtools2/ '
+    cd /opt
+    git clone https://github.com/arq5x/bedtools2.git
+    cd bedtools2/
+    make && make install && make clean
+
+    echo 'Installing deepTools from https://deeptools.readthedocs.io/en/develop/ '
+    cd /opt
+    pip3 install deeptools
+    
+    echo 'Installing macs3 from https://macs3-project.github.io/MACS/ '
+    cd /opt
+    pip3 install macs3
+
+    echo 'Installing HTSeq from https://htseq.readthedocs.io/en/latest/ '
+    cd /opt
+    pip3 install HTSeq
+
+    echo 'Installing RSeQC from https://rseqc.sourceforge.net/ '
+    cd /opt
+    pip3 install RSeQC
+
+### R, EBSeq, DESeq2, RSEM
+
+    echo 'Installing R '
+    cd /opt
+    dnf -y install R
+    echo 'repo <- "http://ftp.ussg.iu.edu/CRAN"' > R2install
+    echo 'install.packages("pafr", repos = repo)' >> R2install
+    echo 'install.packages("getopt", repos = repo)' >> R2install
+    echo 'install.packages("BiocManager", repos = repo)' >> R2install
+    echo 'BiocManager::install(c("EBSeq","DESeq2","R2HTML"), ask=FALSE)' >> R2install
+    echo 'BiocManager::install(c("Rbowtie2","Rbwa"), ask=FALSE)' >> R2install
+    echo 'BiocManager::install(c("BSgenome.Mmusculus.UCSC.mm39"), ask=FALSE)' >> R2install
+    echo 'BiocManager::install(c("BSgenome.Dmelanogaster.UCSC.dm6"), ask=FALSE)' >> R2install
+    echo 'install.packages("rio", repos = repo)' >> R2install
+    echo 'install.packages("tidyverse", repos = repo)' >> R2install
+    echo 'install.packages("ggfortify", repos = repo)' >> R2install
+    echo 'install.packages("ggrepel", repos = repo)' >> R2install
+    echo 'install.packages("RColorBrewer", repos = repo)' >> R2install
+    echo 'BiocManager::install(c("ComplexHeatmap", "apeglm", "ashr" ,"EnhancedVolcano"), ask=FALSE)' >> R2install
+    echo 'BiocManager::install(c("clusterProfiler", "org.Mm.eg.db" ,"AnnotationDbi"), ask=FALSE)' >> R2install
+
+    # Required for ChIPQC:
+    #
+    echo 'BiocManager::install(c("DiffBind", "chipseq", "reshape2", "Nozzle.R1", "GenomicFeatures", "TxDb.Hsapiens.UCSC.hg19.knownGene", "TxDb.Hsapiens.UCSC.hg18.knownGene", "TxDb.Mmusculus.UCSC.mm39.knownGene", "TxDb.Mmusculus.UCSC.mm10.knownGene", "TxDb.Mmusculus.UCSC.mm9.knownGene", "TxDb.Rnorvegicus.UCSC.rn4.ensGene", "TxDb.Celegans.UCSC.ce6.ensGene", "TxDb.Dmelanogaster.UCSC.dm3.ensGene"), ask=FALSE)' >> R2install
+    echo 'BiocManager::install(c(""), ask=FALSE)' >> R2install
+    Rscript R2install
+
+    # Installing a modified version of ChIPQC which supports mm39:
+    #
+    echo 'Installing ChIPQC '
+    R CMD INSTALL ChIPQC_1.41.0.tar.gz
+
+    echo 'Installing RSEM '
+    cd /opt
+    git clone https://github.com/deweylab/RSEM
+    cd RSEM/
+    # ... we do not want the unaligned reads showing up in the BAM file when using bowtie2, thus:
+    sed -i -e "s#--dpad 0#--no-unal --dpad 0#g" rsem-calculate-expression
+    make
+    make ebseq
+
+
+### Alignment software
+
+    echo 'Installing BLAST+ version 2.15.0 from NCBI '
+    cd /opt
+    wget https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.15.0/ncbi-blast-2.15.0+-x64-linux.tar.gz
+    tar -xzf ncbi-blast-2.15.0+-x64-linux.tar.gz
+    cd ncbi-blast-2.15.0+/bin
+    cp * /usr/local/bin/
+    cd ../..
+    rm ncbi-blast-2.15.0+-x64-linux.tar.gz
+    cd ..
+
+    echo 'Installing Vmatch aligner version 2.3.1 from http://vmatch.de '
+    cd /opt
+    wget http://vmatch.de/distributions/vmatch-2.3.1-Linux_x86_64-64bit.tar.gz
+    tar -xzf vmatch-2.3.1-Linux_x86_64-64bit.tar.gz
+    rm vmatch-2.3.1-Linux_x86_64-64bit.tar.gz
+    ln -s vmatch-2.3.1-Linux_x86_64-64bit VMATCH
+
+    echo 'Installing GenomeThreader version 1.7.3 spliced aligner '
+    cd /opt
+    wget http://genomethreader.org/distributions/gth-1.7.3-Linux_x86_64-64bit.tar.gz
+    tar -xzf gth-1.7.3-Linux_x86_64-64bit.tar.gz
+    rm gth-1.7.3-Linux_x86_64-64bit.tar.gz
+    ln -s gth-1.7.3-Linux_x86_64-64bit GENOMETHREADER
+
+
+### Utilities
+
+    echo 'Installing the GenomeTools package: '
+    cd /opt
+    git clone https://github.com/genometools/genometools.git
+    cd genometools
+    make
+    make install
+    make clean
+    sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/genometools-x86_64.conf'
+    ldconfig
+    cd ..
+
+    echo 'Installing ngsutilsj from https://github.com/compgen-io/ngsutilsj.git '
+    cd /opt
+    git clone https://github.com/compgen-io/ngsutilsj
+    cd ngsutilsj
+    ant jar
+    ln -s /opt/ngsutilsj/dist/ngsutilsj /usr/local/bin/ngsutilsj
+    cd ../..
+
+    echo 'Installing NCBI EDirect from https://www.nlm.nih.gov/dataguide/edirect/install.html '
+    cd /opt
+    mkdir NCBIedirect
+    mv xinstall-edirect NCBIedirect
+    cd NCBIedirect
+    bash xinstall-edirect
+
+    echo 'INSTALLING HOMER'
+    cd /opt
+    mkdir HOMER
+    cd /opt/HOMER
+    echo 'Installing HOMER'
+    wget http://homer.ucsd.edu/homer/configureHomer.pl
+    chmod +rwx configureHomer.pl
+    perl configureHomer.pl -install
+    perl configureHomer.pl -update
+ 
+    export PATH=$PATH:/opt/HOMER/bin
+    perl /opt/HOMER/bin/loadGenome.pl -name mm39 -fasta /opt/BSgenome.Mmusculus.UCSC.mm39chrs.fa -gtf /opt/mm39.gtf -org mouse -gid
+    rm -rf /opt/BSgenome.Mmusculus.UCSC.mm39chrs.fa
+    rm -rf /opt/mm39.gtf
+
+
+%environment
+    export LC_ALL=C
+    export PATH=$PATH:/opt/ucsc
+    export PATH=$PATH:/opt/NCBIedirect/edirect
+    export PATH=$PATH:/opt/FastQC
+    export PATH=$PATH:/opt/sratoolkit.3.1.0-ubuntu64/bin
+    export PATH=$PATH:/opt/bowtie2-2.5.3-linux-x86_64
+    export PATH=$PATH:/opt/hisat2-2.2.1
+    export PATH=$PATH:/opt/STAR/bin/Linux_x86_64
+    export PATH=$PATH:/opt/BEDOPS/bin
+    export PATH=$PATH:/opt/RSEM
+    export PATH=$PATH:/opt/GENOMETHREADER/bin
+    export PATH=$PATH:/opt/VMATCH
+    export BSSMDIR="/opt/GENOMETHREADER/bin/bssm"
+    export GTHDATADIR="/opt/GENOMETHREADER/bin/gthdata"
+    export PATH=$PATH:/opt/HOMER/bin
+
+%labels
+    Maintainer vpbrendel
+    Version v1.0

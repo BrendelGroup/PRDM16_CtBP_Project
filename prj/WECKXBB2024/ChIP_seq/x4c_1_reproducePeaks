@@ -4,7 +4,7 @@ shopt -s expand_aliases
 
 
 workdir=${PWD}/..
-SIF=${workdir}/Tools/chs_analysis.sif
+SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
 
 
 #giving an alias for executing the singularity container
@@ -57,7 +57,7 @@ rws bedtools intersect \
       > ${REP_PEAKS_dir}/CTBP2_NSC_final_peaks.bed
 
 #Get the log file for the reproduced peaks
-bash ./x4c_2_get_reproducePeaks_log >& y4c_reproducePeaks_log.txt
+bash ./x4c_2_get_reproducedPeaks_log >& y4c_reproducedPeaks_log.txt
 
 echo ''
 echo 'Log file ready. You may view the numbers of reproduced peaks in the y4c_reproducePeaks_log.txt file.'

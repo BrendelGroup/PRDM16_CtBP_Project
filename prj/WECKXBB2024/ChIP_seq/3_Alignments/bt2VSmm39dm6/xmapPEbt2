@@ -2,7 +2,7 @@
 #
 
 bt2idx=../../../Genomes/genomeMM39DM6/MM39DM6
-FASTQdir=../../2_Cleaning_Reads
+FASTQdir=../../2_Clean_Reads
 bt2_threads=24
 st_threads=24
 SAMPLE=$1

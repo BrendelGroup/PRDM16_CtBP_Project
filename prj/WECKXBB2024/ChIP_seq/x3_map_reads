@@ -2,7 +2,7 @@
 #
 
 # Mapping the cleaned raw reads against the MM39 reference genome
-cd ./3_Alignment/bt2VSmm39/
+cd ./3_Alignments/bt2VSmm39/
 bash ./0Record
 
 cd ..

@@ -13,8 +13,8 @@ alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 
 #Call peaks with MACS3
-BAM_files_dir=${workdir}/ChIP_seq/3_Alignment/bt2VSmm39
-BAM_NSC_dir=${workdir}/ChIP_seq/3_Alignment/bt2VSmm39dm6
+BAM_files_dir=${workdir}/ChIP_seq/3_Alignments/bt2VSmm39
+BAM_NSC_dir=${workdir}/ChIP_seq/3_Alignments/bt2VSmm39dm6
 OUTDIR_MACS3=./4_Peaks
 
 

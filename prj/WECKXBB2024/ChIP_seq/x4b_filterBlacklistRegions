@@ -1,15 +1,7 @@
 #!/bin/bash
 #
-shopt -s expand_aliases
-
 
 workdir=${PWD}/..
-SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
-
-
-#giving an alias for executing the singularity container
-alias rws="singularity exec -e -B${workdir} ${SIF}"
-
 ref_dir=${workdir}/Genomes/genomeMM39
 aln_dir=${workdir}/ChIP_seq/3_Alignments
 peaks_dir=${workdir}/ChIP_seq/4_Peaks
@@ -20,11 +12,11 @@ blacklist_regions=${ref_dir}/mm39.excluderanges.bed
 #filtering the blacklist regions in the TF ChIP-seq samples
 for sample in CTBP2_e_1 CTBP2_e_2 CTBP2wt_n_1 CTBP2wt_n_2 PRDM16_e_1 PRDM16_e_2 HDAC1_e_1 HDAC1_e_2 LSD1_e_1 LSD1_e_2 CTCF_wb_1 CTCF_wb_2 
 do
-   rws bedtools intersect \
+   bedtools intersect \
          -a ${peaks_dir}/${sample}/${sample}_peaks.narrowPeak \
          -b ${blacklist_regions} \
          -v > ${peaks_dir}/${sample}/${sample}_filtered.bed
-   rws bedtools intersect \
+   bedtools intersect \
          -a ${peaks_dir}/${sample}/${sample}_peaks.narrowPeak \
          -b ${blacklist_regions} | grep -c . > ${peaks_dir}/${sample}/${sample}_num_regions.txt 
    echo ${sample}':' "$(cat ${peaks_dir}/${sample}/${sample}_num_regions.txt)" 'regions have been excluded from' ${sample}'. The remaining' ${sample}' peaks are' "$(grep -c . ${peaks_dir}/${sample}/${sample}_filtered.bed)"'.'
@@ -36,11 +28,11 @@ done
 #filtering the blacklist regions in the histone ChIP-seq samples
 for sample in H3K4me3_e_1 H3K4me3_e_2 H3K27ac_e_1 H3K27ac_e_2 H3K4me1_e_1 H3K4me1_e_2
 do
-   rws bedtools intersect \
+   bedtools intersect \
          -a ${peaks_dir}/${sample}/${sample}_peaks.broadPeak \
          -b ${blacklist_regions} \
          -v > ${peaks_dir}/${sample}/${sample}_filtered.bed
-   rws bedtools intersect \
+   bedtools intersect \
          -a ${peaks_dir}/${sample}/${sample}_peaks.broadPeak \
          -b ${blacklist_regions} | grep -c . > ${peaks_dir}/${sample}/${sample}_num_regions.txt 
    echo ${sample}':' "$(cat ${peaks_dir}/${sample}/${sample}_num_regions.txt)" 'regions have been excluded from' ${sample}'. The remaining' ${sample}' peaks are' "$(grep -c . ${peaks_dir}/${sample}/${sample}_filtered.bed)"'.'

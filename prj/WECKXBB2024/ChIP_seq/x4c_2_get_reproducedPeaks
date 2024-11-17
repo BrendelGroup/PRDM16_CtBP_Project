@@ -1,12 +1,14 @@
 #!/bin/bash
 #
+
 workdir=${PWD}/..
 peaks_dir=${workdir}/ChIP_seq/4_Peaks
-REP_PEAKS_dir=${peaks_dir}/z1_Reproduced_Peaks
+REP_PEAKS_dir=${peaks_dir}/Reproduced_Peaks
 
 
 
-#This script generates the log file (y4c_reproducePeaks_log.txt) for the reproduced peaks and is executed from the x4c_1_reproducePeaks bash script
+#This script is called from the x4c_1_reproducePeaks bash script and
+# generates the log file y4c_logfile for the reproduced peaks.
 #
 
 echo 'The reproduced peaks for all the experiments except for CTBP2:'

@@ -8,14 +8,13 @@ shopt -s expand_aliases
 workdir=${PWD}/..
 SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
 
-#giving an alias for executing the singularity container
-
 alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 
 # 1. Acquiring the raw data for the H3K4me3 ChIP-Seq replicates from different developmental stages
-bash ./x1_download_raw_reads
-#  Derive summary statistics:
+rws bash ./x1_download_raw_reads
+
+#    Derive summary statistics:
 cd ./1_Raw_Reads
 rws seqkit stats -j 10 *.fastq > summary.stats
 rws seqkit stats -j 10 *.fastq -T > summary.tsv
@@ -23,16 +22,22 @@ cd ..
 
 
 # 2. Clean the raw reads and run a quality check on them
-bash ./x2_clean_raw_reads
+rws bash ./x2_clean_raw_reads
 
 
 # 3. Align the cleaned raw reads into the the reference genome
-bash ./x3_map_reads
+rws bash ./x3_map_reads
 
 
 # 4. Call the peaks and process them by filtering out blacklist regions and reproducing them + annotating the CTBP2 peaks
-bash ./x4a_callPeaks;bash ./x4b_filterBlacklistRegions >& ./y4b_filterBlacklistRegions_log.txt;bash ./x4c_1_reproducePeaks;bash ./x4d_annotateCTBP2Peaks >& y4d_annotateCTBP2Peaks_log.txt
+rws bash ./x4a_callPeaks
+rws bash ./x4b_filterBlacklistRegions >& ./y4b_filterBlacklistRegions_log.txt
+rws bash ./x4c_1_reproducePeaks
+rws bash ./x4d_annotateCTBP2Peaks >& y4d_annotateCTBP2Peaks_log.txt
 
 
 # 5. Generate the bigWig files and perform the spike-in normalization for the spiked-in samples
-bash ./x5a_get_bigWigs >& y5a_get_bigWigs_log.txt;bash ./x5b_1_countReadsForSpikeIn > y5b_1_countReadsForSpikeIn_log.txt;bash ./x5b_2_get_bigWigs_spike_in >& y5b_2_get_bigWigs_spike_in_log.txt; bash ./x5c_BW_Average
+rws bash ./x5a_get_bigWigs >& y5a_get_bigWigs_log.txt
+rws bash ./x5b_1_countReadsForSpikeIn > y5b_1_countReadsForSpikeIn_log.txt
+rws bash ./x5b_2_get_bigWigs_spike_in >& y5b_2_get_bigWigs_spike_in_log.txt
+rws bash ./x5c_BW_Average

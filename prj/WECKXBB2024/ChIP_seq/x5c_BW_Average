@@ -1,31 +1,17 @@
 #!/bin/bash
 #
-shopt -s expand_aliases
-
-
-workdir=${PWD}/..
-SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
-SIF2=${workdir}/Tools/PRDM16_CtBP_Project.sif
-
-
-#giving an alias for executing the singularity container
-alias rws="singularity exec -e -B${workdir} ${SIF}"
-alias rws2="singularity exec -e -B${workdir} ${SIF2}"
-
-
 
 #Averaging the bigWig files with deepTools bigwigAverage
 
+workdir=${PWD}/..
 ref_dir=${workdir}/Genomes/genomeMM39
 blacklist_regions=${ref_dir}/mm39.excluderanges.bed
-
 bigWig_DIR=./5_bigWigs
-
 
 
 for sample in PRDM16_e HDAC1_e CTCF_wb H3K4me3_e H3K27ac_e H3K4me1_e CTBP2wt_n CTBP2ko_n
 do
-   rws bigwigAverage \
+   bigwigAverage \
          -b ${bigWig_DIR}/${sample}_1.bw ${bigWig_DIR}/${sample}_2.bw \
          --binSize 10 \
          --blackListFileName ${blacklist_regions} \
@@ -35,10 +21,7 @@ do
 done
 
 
-
-
-
-rws2 bigWigMerge \
+bigWigMerge \
       ${bigWig_DIR}/CTBP2_e_1.bw \
       ${bigWig_DIR}/CTBP2_e_2.bw \
       ${bigWig_DIR}/CTBP2_e_merged.bedGraph
@@ -47,13 +30,13 @@ sort -k1,1 -k2,2n \
       ${bigWig_DIR}/CTBP2_e_merged.bedGraph \
       > ${bigWig_DIR}/CTBP2_e_merged_sorted.bedGraph
          
-rws2 bedGraphToBigWig \
+bedGraphToBigWig \
       ${bigWig_DIR}/CTBP2_e_merged_sorted.bedGraph \
       ${ref_dir}/mm39.chrom.sizes \
       ${bigWig_DIR}/CTBP2_e_merged.bw
            
       
-rws2 bigWigMerge \
+bigWigMerge \
       ${bigWig_DIR}/CTBP2wt_n_1.bw \
       ${bigWig_DIR}/CTBP2wt_n_2.bw \
       ${bigWig_DIR}/CTBP2wt_n_merged.bedGraph
@@ -62,13 +45,13 @@ sort -k1,1 -k2,2n \
       ${bigWig_DIR}/CTBP2wt_n_merged.bedGraph \
       > ${bigWig_DIR}/CTBP2wt_n_merged_sorted.bedGraph
          
-rws2 bedGraphToBigWig \
+bedGraphToBigWig \
       ${bigWig_DIR}/CTBP2wt_n_merged_sorted.bedGraph \
       ${ref_dir}/mm39.chrom.sizes \
       ${bigWig_DIR}/CTBP2wt_n_merged.bw
 
 
-rws bigwigAverage \
+bigwigAverage \
       -b ${bigWig_DIR}/CTBP2_e_merged.bw ${bigWig_DIR}/CTBP2wt_n_merged.bw \
       --scaleFactors 0.5:0.5 \
       --binSize 10 \

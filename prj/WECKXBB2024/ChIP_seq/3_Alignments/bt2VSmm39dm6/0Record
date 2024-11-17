@@ -2,12 +2,8 @@
 #
 shopt -s expand_aliases
 
-
 workdir=${PWD}/../../..
 SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
-
-
-#giving an alias for executing the singularity container
 alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 

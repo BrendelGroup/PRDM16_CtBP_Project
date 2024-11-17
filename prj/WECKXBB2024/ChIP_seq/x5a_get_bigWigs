@@ -1,23 +1,11 @@
 #!/bin/bash
 #
-shopt -s expand_aliases
-
-
-workdir=${PWD}/..
-SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
-
-
-#giving an alias for executing the singularity container
-alias rws="singularity exec -e -B${workdir} ${SIF}"
-
-
-
 #Generating bigWig files with deepTools bamCoverage
 
+workdir=${PWD}/..
 BAM_files_dir=${workdir}/ChIP_seq/3_Alignments/bt2VSmm39
 ref_dir=${workdir}/Genomes/genomeMM39
 blacklist_regions=${ref_dir}/mm39.excluderanges.bed
-
 OUTDIR_BW=./5_bigWigs
 
 
@@ -25,7 +13,7 @@ for samplePE in CTBP2_e_1 CTBP2_e_2 HDAC1_e_1 HDAC1_e_2 LSD1_e_1 LSD1_e_2
 do
    echo ${samplePE}':'
    echo ''
-   rws bamCoverage \
+   bamCoverage \
          -b ${BAM_files_dir}/${samplePE}.bam \
          -o ${OUTDIR_BW}/${samplePE}.bw \
          --numberOfProcessors max \
@@ -43,7 +31,7 @@ for sampleSE in H3K4me3_e_1 H3K4me3_e_2 CTCF_wb_1 CTCF_wb_2 PRDM16_e_1 PRDM16_e_
 do
    echo ${sampleSE}':'
    echo ''
-   rws bamCoverage \
+   bamCoverage \
          -b ${BAM_files_dir}/${sampleSE}.bam \
          -o ${OUTDIR_BW}/${sampleSE}.bw \
          --numberOfProcessors max \

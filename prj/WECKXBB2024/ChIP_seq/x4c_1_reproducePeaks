@@ -1,26 +1,16 @@
 #!/bin/bash
 #
-shopt -s expand_aliases
-
 
 workdir=${PWD}/..
-SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
-
-
-#giving an alias for executing the singularity container
-alias rws="singularity exec -e -B${workdir} ${SIF}"
-
-
-
 peaks_dir=${workdir}/ChIP_seq/4_Peaks
-REP_PEAKS_dir=${peaks_dir}/z1_Reproduced_Peaks
+REP_PEAKS_dir=${peaks_dir}/Reproduced_Peaks
 
 
 #Reproducing the peaks
 
 for sample in PRDM16_e HDAC1_e LSD1_e CTCF_wb H3K4me3_e H3K27ac_e H3K4me1_e
 do
-   rws bedtools intersect \
+   bedtools intersect \
          -wo -f 0.3 -r \
          -a ${peaks_dir}/${sample}_1/${sample}_1_filtered.bed \
          -b ${peaks_dir}/${sample}_2/${sample}_2_filtered.bed \
@@ -32,12 +22,12 @@ done
 
 for CTBP2peakFile in CTBP2_e CTBP2wt_n
 do
-   rws mergePeaks -d given \
+   mergePeaks -d given \
          ${peaks_dir}/${CTBP2peakFile}_1/${CTBP2peakFile}_1_filtered.bed \
          ${peaks_dir}/${CTBP2peakFile}_2/${CTBP2peakFile}_2_filtered.bed \
          > ${REP_PEAKS_dir}/${CTBP2peakFile}_merged.bed
          
-   rws pos2bed.pl ${REP_PEAKS_dir}/${CTBP2peakFile}_merged.bed \
+   pos2bed.pl ${REP_PEAKS_dir}/${CTBP2peakFile}_merged.bed \
          > ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks_with_header.bed
          
    sed '1d' ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks_with_header.bed \
@@ -50,14 +40,15 @@ done
 
 #Final NSC CTBP2 peaks
 
-rws bedtools intersect \
+bedtools intersect \
       -wo -f 0.3 -r \
       -a ${REP_PEAKS_dir}/CTBP2_e_union_peaks.bed \
       -b ${REP_PEAKS_dir}/CTBP2wt_n_union_peaks.bed \
       > ${REP_PEAKS_dir}/CTBP2_NSC_final_peaks.bed
 
 #Get the log file for the reproduced peaks
-bash ./x4c_2_get_reproducedPeaks_log >& y4c_reproducedPeaks_log.txt
+#
+bash ./x4c_2_get_reproducedPeaks >& y4c.logfile
 
 echo ''
-echo 'Log file ready. You may view the numbers of reproduced peaks in the y4c_reproducePeaks_log.txt file.'
+echo 'y4c_logfile now shows the numbers of reproduced peaks.'

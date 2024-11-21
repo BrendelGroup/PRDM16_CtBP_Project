@@ -6,8 +6,8 @@ workdir=../..
 
 for exprmnt in ats_e_1 ats_e_2
 do
-  echo -e "\nNow running: ${workdir}/../Tools/xcountSAMtypes ${exprmnt}.bam > ${exprmnt}.mapped.PEread.counts"
-  ${workdir}/../Tools/xcountSAMtypes ${exprmnt}.bam > ${exprmnt}.mapped.PEread.counts &
+  echo -e "\nNow running: xcountSAMtypes ${exprmnt}.bam > ${exprmnt}.mapped.PEread.counts"
+  xcountSAMtypes ${exprmnt}.bam > ${exprmnt}.mapped.PEread.counts &
 done
 wait
 

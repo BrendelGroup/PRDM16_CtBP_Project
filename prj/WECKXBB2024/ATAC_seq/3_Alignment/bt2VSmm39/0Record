@@ -13,13 +13,13 @@ alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 # 1. Aligning the reads to the mm39 mouse genome:
 #
-rws ./xbt2VSmm39 >& log
+rws bash ./xbt2VSmm39 >& log
 
 
 
 # 2. Checking on the alignment results:
 #
-rws ./xPEmapping_success
+rws bash ./xPEmapping_success
 
 #
 # ... produces *.mapped.PEread.counts, PEmapping_success.summary (which

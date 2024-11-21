@@ -1,29 +1,20 @@
 #!/bin/bash
 #
-shopt -s expand_aliases
-
 
 workdir=${PWD}/..
-SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
-
-
-#giving an alias for executing the singularity container
-alias rws="singularity exec -e -B${workdir} ${SIF}"
-
-
 rawData_dir=${workdir}/ATAC_seq/1_Raw_Reads
 cleanReads_dir=${workdir}/ATAC_seq/2_Cleaning_Reads
 
 
 cd ${cleanReads_dir}
-rws bash ${cleanReads_dir}/xqctrl_ats_e
+bash ${cleanReads_dir}/xqctrl_ats_e
 
 
 # Summary:
 #
 bash ${cleanReads_dir}/xmv
 
-rws seqkit stats -j 13 *fq > summary.stats
-rws seqkit stats -j 13 *fq -T > summary.tsv
+seqkit stats -j 13 *fq > summary.stats
+seqkit stats -j 13 *fq -T > summary.tsv
 
 cd ..

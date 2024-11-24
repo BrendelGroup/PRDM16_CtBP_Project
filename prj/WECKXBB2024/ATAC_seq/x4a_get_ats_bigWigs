@@ -2,7 +2,7 @@
 #
 
 workdir=${PWD}/..
-BAM_files_dir=${workdir}/ATAC_seq/3_Alignment/bt2VSmm39
+BAM_files_dir=${workdir}/ATAC_seq/3_Alignments/bt2VSmm39
 ref_dir=${workdir}/Genomes/genomeMM39
 blacklist_regions=${ref_dir}/mm39.excluderanges.bed
 OUTDIR_BW=./4_bigWigs

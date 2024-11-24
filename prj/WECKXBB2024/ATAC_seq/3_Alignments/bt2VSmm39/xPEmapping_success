@@ -17,9 +17,9 @@ grep "Mapping success" *.mapped.PEread.counts | cut -d":" -f1,3 | sed -e "s/.map
 perl -e "print(\"Sample      \tAll Reads\tAfter trimming  \tAfter dusting   \tAfter mapping\n\")" > PEread_processing.summary
 for exprmnt in ats_e_1 ats_e_2
 do
-  trimmomatic_log=${workdir}/2_Cleaning_Reads/${exprmnt}/err_${exprmnt}
-  tagdust_log=${workdir}/2_Cleaning_Reads/${exprmnt}/tagdust_log
-  mapping_log=${workdir}/3_Alignment/bt2VSmm39/${exprmnt}.mapped.PEread.counts
+  trimmomatic_log=${workdir}/2_Clean_Reads/${exprmnt}/err_${exprmnt}
+  tagdust_log=${workdir}/2_Clean_Reads/${exprmnt}/tagdust_log
+  mapping_log=${workdir}/3_Alignments/bt2VSmm39/${exprmnt}.mapped.PEread.counts
 
   a=`grep "Input Read Pairs:" ${trimmomatic_log} | sed -e "s/Input Read Pairs: //; s/ Both Surviving.*//;"`
   s=`grep "Input Read Pairs:" ${trimmomatic_log} | sed -e "s/Input Read Pairs:.*Both Surviving: //;" | cut -d" " -f1`

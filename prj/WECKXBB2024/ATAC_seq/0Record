@@ -2,34 +2,38 @@
 #
 shopt -s expand_aliases
 
-# Run this script from within the PRDM16_CtBP_Project singularity container, e.g.
+# Run the scripts within the PRDM16_CtBP_Project singularity container, e.g.
 # with "rws" specified as follows:
 #
 workdir=${PWD}/..
 SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
 
-#giving an alias for executing the singularity container
-
 alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 
 # 1. Acquiring the raw data for the ATAC-seq forebrain e14.5 two replicates 
+#
 rws bash ./x1_download_raw_reads
+
 #  Derive summary statistics:
+#
 cd ./1_Raw_Reads
-rws seqkit stats -j 10 *.fastq > summary.stats
+rws seqkit stats -j 10 *.fastq    > summary.stats
 rws seqkit stats -j 10 *.fastq -T > summary.tsv
 cd ..
 
 
 # 2. Clean the raw reads and run a quality check on them
+#
 rws bash ./x2_clean_raw_reads
 
 
 # 3. Align the cleaned raw reads into the the reference genome
+#
 rws bash ./x3_map_reads
 
 
 # 4. Generate the bigWig files
-rws bash ./x4a_get_ats_bigWigs >& y4a_get_ats_bigWigs_log.txt
+#
+rws bash ./x4a_get_ats_bigWigs >& y4a_get_ats_bigWigs.logfile
 rws bash ./x4b_BW_Average

@@ -3,7 +3,7 @@
 
 workdir=${PWD}/..
 rawData_dir=${workdir}/ATAC_seq/1_Raw_Reads
-cleanReads_dir=${workdir}/ATAC_seq/2_Cleaning_Reads
+cleanReads_dir=${workdir}/ATAC_seq/2_Clean_Reads
 
 
 cd ${cleanReads_dir}

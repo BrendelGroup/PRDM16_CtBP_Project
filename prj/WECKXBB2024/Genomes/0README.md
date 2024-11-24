@@ -11,7 +11,7 @@ cd genomeDM6/
 bash ./0Record 
 cd ..
 
-cd ../genomeMM39DM6/
+cd genomeMM39DM6/
 bash ./0Record 
 cd ..
 ```

@@ -1,31 +1,18 @@
 #!/bin/bash
 #
-shopt -s expand_aliases
-
 
 workdir=${PWD}/..
-SIF=${workdir}/Tools/chs_analysis.sif
-
-
-#giving an alias for executing the singularity container
-alias rws="singularity exec -e -B${workdir} ${SIF}"
-
-
-
-#Generating bigWig files with deepTools bamCoverage
-
 BAM_files_dir=${workdir}/ATAC_seq/3_Alignment/bt2VSmm39
 ref_dir=${workdir}/Genomes/genomeMM39
 blacklist_regions=${ref_dir}/mm39.excluderanges.bed
-
 OUTDIR_BW=./4_bigWigs
 
-
+#Generating bigWig files with deepTools bamCoverage
 for sampleATS in ats_e_1 ats_e_2
 do
    echo ${sampleATS}':'
    echo ''
-   rws bamCoverage \
+   bamCoverage \
          -b ${BAM_files_dir}/${sampleATS}.bam \
          -o ${OUTDIR_BW}/${sampleATS}.bw \
          --numberOfProcessors max \

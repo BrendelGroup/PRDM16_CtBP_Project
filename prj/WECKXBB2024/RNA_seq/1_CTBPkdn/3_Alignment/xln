@@ -1,11 +1,5 @@
-shopt -s expand_aliases
-
-# Specify the working directory and the PRDM16_CtBP_Project singularity image file:
-#
 workdir=${PWD}/../../..
-SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
 
-alias rws="singularity exec -e -B${workdir} $SIF"
 
 
 ln -s CTBPctl_1/CTBPctl_1_Aligned.sortedByCoord.out.bam	CTBPctl_1.bam
@@ -19,6 +13,6 @@ ln -s CTBPkdn_4/CTBPkdn_4_Aligned.sortedByCoord.out.bam	CTBPkdn_4.bam
 
 for file in CTBPctl_1 CTBPctl_2 CTBPctl_3 CTBPctl_4 CTBPkdn_1 CTBPkdn_2 CTBPkdn_3 CTBPkdn_4
 do
-  rws samtools index ${file}.bam
+  samtools index ${file}.bam
   ../../../Tools/xcountSAMtypes ${file}.bam > ${file}.counts
 done

@@ -1,0 +1,8 @@
+# In this directory (RNA_seq), each experiment folder (CTBPkdn and PRDM16KO) has a "0Record" that file will execute all the bash scripts that analyses the RNA-seq data starting from downloading the raw reads up until generating the differential gene expression tables and plots 
+
+#All you have to do to perform the RNA-seq analysis is to make sure you are inside an experiment's directory in the terminal and execute:
+
+bash ./0Record 
+
+
+# See comments in 0Record for more details on the bash scripts.

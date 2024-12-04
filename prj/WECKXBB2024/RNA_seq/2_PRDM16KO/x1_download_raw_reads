@@ -1,17 +1,7 @@
 #!/bin/bash
 #
-shopt -s expand_aliases
-
 
 workdir=${PWD}/../..
-SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
-
-
-#giving an alias for executing the singularity container
-alias rws="singularity exec -e -B${workdir} ${SIF}"
-
-
-
 RAW_DATA_dir=${workdir}/RNA_seq/2_PRDM16KO/1_Raw_Reads
 
 
@@ -20,7 +10,7 @@ RAW_DATA_dir=${workdir}/RNA_seq/2_PRDM16KO/1_Raw_Reads
 for acc in SRR6823714 SRR6823715 SRR6823716 SRR6823717 SRR6823718 SRR6823719 SRR6823720 SRR6823721 SRR6823738 SRR6823739 SRR6823740 SRR6823741 SRR6823742 SRR6823743 SRR6823744 SRR6823745 SRR6823722 SRR6823723 SRR6823724 SRR6823725 SRR6823726 SRR6823727 SRR6823728 SRR6823729 SRR6823746 SRR6823747 SRR6823748 SRR6823749 SRR6823750 SRR6823751 SRR6823752 SRR6823753
 do
 	echo ${acc} >> ${RAW_DATA_dir}/download.log
-	rws fasterq-dump ${acc} >> ${RAW_DATA_dir}/download.log 2>&1
+	fasterq-dump ${acc} >> ${RAW_DATA_dir}/download.log 2>&1
 	echo -e "\n" >> ${RAW_DATA_dir}/download.log
 done
 

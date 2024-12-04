@@ -1,15 +1,7 @@
 #!/bin/bash
 #
-shopt -s expand_aliases
-
 
 workdir=${PWD}/../../..
-SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
-
-
-#giving an alias for executing the singularity container
-alias rws="singularity exec -e -B${workdir} ${SIF}"
-
 
 
 # Map the RNA-seq reads using the STAR aligner:
@@ -23,7 +15,7 @@ SAMPLES="PRDM16_PPCko1 PRDM16_PPCko2 PRDM16_PPCko3 PRDM16_PPCko4 PRDM16_PPCwt1 P
 
 for sample in ${SAMPLES}
 do
-  rws STAR --runThreadN ${NTHREADS} \
+  STAR --runThreadN ${NTHREADS} \
 	--genomeDir ${STARidx} \
 	--readFilesIn ${READS_dir}/${sample}.fq \
 	--outFileNamePrefix ${sample}_ \

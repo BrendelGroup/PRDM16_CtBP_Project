@@ -14,7 +14,7 @@ alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 
 # 1. Acquiring the raw data for the H3K4me3 ChIP-Seq replicates from different developmental stages
-bash ./x1_download_raw_reads
+rws bash ./x1_download_raw_reads
 #  Derive summary statistics:
 cd ./1_Raw_Reads
 rws seqkit stats -j 10 *.fastq > summary.stats
@@ -23,11 +23,11 @@ cd ..
 
 
 # 2. Clean the raw reads and run a quality check on them
-bash ./x2_clean_raw_reads
+rws bash ./x2_clean_raw_reads
 
 
 # 3. Align the cleaned raw reads into the the reference genome
-bash ./x3_map_reads
+rws bash ./x3_map_reads
 
 # 4. Perform the differential gene expression analysis on the raw counts and get the lists of up and down regulated genes
-bash ./x4_DGE_Analysis
+rws bash ./x4_DGE_Analysis

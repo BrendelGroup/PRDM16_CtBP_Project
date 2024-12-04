@@ -4,9 +4,6 @@ shopt -s expand_aliases
 
 
 workdir=${PWD}/../../..
-SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
-
-alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 
 ln -s PRDM16_PPCko1/PRDM16_PPCko1_Aligned.sortedByCoord.out.bam ./PRDM16_PPCko1.bam
@@ -29,6 +26,6 @@ ln -s PRDM16_TPCwt4/PRDM16_TPCwt4_Aligned.sortedByCoord.out.bam ./PRDM16_TPCwt4.
 
 for file in PRDM16_PPCko1 PRDM16_PPCko2 PRDM16_PPCko3 PRDM16_PPCko4 PRDM16_PPCwt1 PRDM16_PPCwt2 PRDM16_PPCwt3 PRDM16_PPCwt4 PRDM16_TPCko1 PRDM16_TPCko2 PRDM16_TPCko3 PRDM16_TPCko4 PRDM16_TPCwt1 PRDM16_TPCwt2 PRDM16_TPCwt3 PRDM16_TPCwt4
 do
-  rws samtools index ${file}.bam
+  samtools index ${file}.bam
   bash ${workdir}/Tools/xcountSAMtypes ${file}.bam > ${file}.counts
 done

@@ -1,19 +1,9 @@
 #!/bin/bash
-
-shopt -s expand_aliases
-
-# Specify directory for the container
-workdir=${PWD}/../../../..
-SIF=${workdir}/Tools/RNA-Seq.sif
-
-
-#giving an alias for executing the singularity container
-alias rws="singularity exec -e -B${workdir} $SIF"
-
+#
 
 #Executing the RNA-Seq DGE Analysis script
 
-rws Rscript ./x2b_DGE_analysis_TPC.R
+Rscript ./x2b_DGE_analysis_TPC.R
 
 
 #Appropriately arranging the headers of the exported matrices

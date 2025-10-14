@@ -1,24 +1,24 @@
 #!/bin/bash
 #
 
+
 #Generating bigWig files with deepTools bamCoverage
 
-workdir=${PWD}/..
-BAM_NSC_dir=${workdir}/ChIP_seq/3_Alignments/bt2VSmm39dm6
-ref_dir=${workdir}/Genomes/genomeMM39
+BAM_NSC_dir=./3_Alignments/bt2VSmm39dm6
+ref_dir=../Genomes/genomeMM39
 blacklist_regions=${ref_dir}/mm39.excluderanges.bed
 OUTDIR_BW=./5_bigWigs
 
 
 
 #The drosophila read counts that are generated from the previous script (x5b_1_countReadsForSpikeIn):
-#The count of drosophila reads for the CTBP2wt_n_1 is: 599528
+#The count of drosophila reads for the CTBP2wt_n_1 is: 599558
 
-#The count of drosophila reads for the CTBP2wt_n_2 is: 322570
+#The count of drosophila reads for the CTBP2wt_n_2 is: 322556
 
-#The count of drosophila reads for the CTBP2ko_n_1 is: 344216
+#The count of drosophila reads for the CTBP2ko_n_1 is: 344196
 
-#The count of drosophila reads for the CTBP2ko_n_2 is: 368736
+#The count of drosophila reads for the CTBP2ko_n_2 is: 368720
 
 
 
@@ -26,69 +26,69 @@ OUTDIR_BW=./5_bigWigs
 
 
 
-#The scale factor for CTBP2wt_n_1 is: 322570/599528 = 0.54
+#The scale factor for CTBP2wt_n_1 is: 322556/599558 = 0.54
 
-#The scale factor for CTBP2wt_n_2 is: 322570/322570 = 1.0
+#The scale factor for CTBP2wt_n_2 is: 322556/322556 = 1.0
 
-#The scale factor for CTBP2ko_n_1 is: 322570/344216 = 0.94
+#The scale factor for CTBP2ko_n_1 is: 322556/344196 = 0.95
 
-#The scale factor for CTBP2ko_n_2 is: 322570/368736 = 0.87
+#The scale factor for CTBP2ko_n_2 is: 322556/368720 = 0.88
 
 
 echo 'CTBP2wt_n_1:'
 echo ''
 bamCoverage \
-      -b ${BAM_NSC_dir}/CTBP2wt_n_1.mm39.bam \
-      -o ${OUTDIR_BW}/CTBP2wt_n_1.bw \
-      --numberOfProcessors max \
-      --scaleFactor 0.54 \
-      --binSize 10 \
-      --blackListFileName ${blacklist_regions} \
-      --extendReads \
-      --smoothLength 30 \
-      --centerReads
+	-b ${BAM_NSC_dir}/CTBP2wt_n_1.mm39.bam \
+	-o ${OUTDIR_BW}/CTBP2wt_n_1.bw \
+	--numberOfProcessors max \
+	--scaleFactor 0.54 \
+	--binSize 10 \
+	--blackListFileName ${blacklist_regions} \
+	--extendReads \
+	--smoothLength 30 \
+	--centerReads
 echo ''
-echo '' 
+echo ''
 
 echo 'CTBP2wt_n_2:'
-echo ''     
+echo ''
 bamCoverage \
-      -b ${BAM_NSC_dir}/CTBP2wt_n_2.mm39.bam \
-      -o ${OUTDIR_BW}/CTBP2wt_n_2.bw \
-      --numberOfProcessors max \
-      --scaleFactor 1.0 \
-      --binSize 10 \
-      --blackListFileName ${blacklist_regions} \
-      --extendReads \
-      --smoothLength 30 \
-      --centerReads
+	-b ${BAM_NSC_dir}/CTBP2wt_n_2.mm39.bam \
+	-o ${OUTDIR_BW}/CTBP2wt_n_2.bw \
+	--numberOfProcessors max \
+	--scaleFactor 1.0 \
+	--binSize 10 \
+	--blackListFileName ${blacklist_regions} \
+	--extendReads \
+	--smoothLength 30 \
+	--centerReads
 echo ''
 echo ''
 
 echo 'CTBP2ko_n_1:'
 echo ''
 bamCoverage \
-      -b ${BAM_NSC_dir}/CTBP2ko_n_1.mm39.bam \
-      -o ${OUTDIR_BW}/CTBP2ko_n_1.bw \
-      --numberOfProcessors max \
-      --scaleFactor 0.94 \
-      --binSize 10 \
-      --blackListFileName ${blacklist_regions} \
-      --extendReads \
-      --smoothLength 30 \
-      --centerReads
+	-b ${BAM_NSC_dir}/CTBP2ko_n_1.mm39.bam \
+	-o ${OUTDIR_BW}/CTBP2ko_n_1.bw \
+	--numberOfProcessors max \
+	--scaleFactor 0.95 \
+	--binSize 10 \
+	--blackListFileName ${blacklist_regions} \
+	--extendReads \
+	--smoothLength 30 \
+	--centerReads
 echo ''
 echo ''
 
 echo 'CTBP2ko_n_2:'
 echo ''
 bamCoverage \
-      -b ${BAM_NSC_dir}/CTBP2ko_n_2.mm39.bam \
-      -o ${OUTDIR_BW}/CTBP2ko_n_2.bw \
-      --numberOfProcessors max \
-      --scaleFactor 0.87 \
-      --binSize 10 \
-      --blackListFileName ${blacklist_regions} \
-      --extendReads \
-      --smoothLength 30 \
-      --centerReads
+	-b ${BAM_NSC_dir}/CTBP2ko_n_2.mm39.bam \
+	-o ${OUTDIR_BW}/CTBP2ko_n_2.bw \
+	--numberOfProcessors max \
+	--scaleFactor 0.88 \
+	--binSize 10 \
+	--blackListFileName ${blacklist_regions} \
+	--extendReads \
+	--smoothLength 30 \
+	--centerReads

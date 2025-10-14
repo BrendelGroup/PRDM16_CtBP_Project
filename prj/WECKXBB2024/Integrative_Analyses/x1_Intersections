@@ -1,0 +1,272 @@
+#!/bin/bash
+#
+
+
+peaks_dir=../ChIP_seq/4_Peaks
+REP_PEAKS_dir=${peaks_dir}/Reproduced_Peaks
+annotated_peaks_dir=${peaks_dir}/Annotated_Peaks
+
+INTERSECTION_dir=./1_Intersections
+
+C_RNS_dir=../RNA_seq/1_CtbpKD/4_DGE_Analysis
+P16_RNS_dir=../RNA_seq/2_Prdm16KOinvivo/5_Combine_PAX6_TBR2
+P16invitro_RNS_dir=../RNA_seq/2_Prdm16KOinvitro/4_DGE_Analysis
+
+
+
+#PRDM16_with_CTBP2:
+
+bedtools intersect \
+      -a ${REP_PEAKS_dir}/PRDM16_e_final_peaks.bed \
+      -b ${REP_PEAKS_dir}/CTBP2_NSC_final_peaks.bed \
+      -f 0.5 -F 0.5 -e \
+      > ${INTERSECTION_dir}/r1_PRDM16_with_CTBP2.bed
+      
+      
+###EPP stands for Enhancer-Promoter Pairs (that come from the Bonev et al. 2017 paper)
+#EPP2017 with the H3K27ac
+
+bedtools intersect \
+      -a ./a1_Bonev_et_al_2017_EPP_NPC_liftover.bed \
+      -b ${REP_PEAKS_dir}/H3K27ac_e_final_peaks.bed \
+      -f 0.5 -F 0.5 -e \
+      | sort -k1 \
+      | uniq > ${INTERSECTION_dir}/s1_NPC_EPP2017_K27ac.bed
+
+
+#PRDM16 with the EPP2017_K27ac
+
+bedtools intersect \
+      -a ${INTERSECTION_dir}/s1_NPC_EPP2017_K27ac.bed \
+      -b ${REP_PEAKS_dir}/PRDM16_e_final_peaks.bed \
+      -f 0.5 -F 0.5 -e \
+      | sort -k1 \
+      | uniq > ${INTERSECTION_dir}/s2_PRDM16_NPC_EPP2017_K27ac.bed
+         
+         
+#CTBP2 with the NPC_EPP2017_K27ac
+
+bedtools intersect \
+      -a ${INTERSECTION_dir}/s1_NPC_EPP2017_K27ac.bed \
+      -b ${REP_PEAKS_dir}/CTBP2_NSC_final_peaks.bed \
+      -f 0.5 -F 0.5 -e \
+      | sort -k1 \
+      | uniq > ${INTERSECTION_dir}/s3_CTBP2_NPC_EPP2017_K27ac.bed   
+         
+         
+#3-way overlap EPP2017_K27ac
+
+bedtools intersect \
+      -a ${INTERSECTION_dir}/s2_PRDM16_NPC_EPP2017_K27ac.bed \
+      -b ${INTERSECTION_dir}/s3_CTBP2_NPC_EPP2017_K27ac.bed  \
+      -f 0.5 -F 0.5 -e \
+      | sort -k1 \
+      | uniq > ${INTERSECTION_dir}/s4_PEPP2017_CEPP2017.bed
+         
+         
+#Generating text for a log file that reports the number of overlapping regions
+         
+INTERSECTIONS="s1_NPC_EPP2017_K27ac s2_PRDM16_NPC_EPP2017_K27ac s3_CTBP2_NPC_EPP2017_K27ac s4_PEPP2017_CEPP2017"
+
+for intersection in ${INTERSECTIONS}
+do
+echo 'The intersection of' ${intersection} 'resulted in' "$(grep -c . ${INTERSECTION_dir}/${intersection}.bed)" 'overlapping regions.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+done   
+
+
+
+#Get the common genes that are the promoter annotated CTBP2 peaks, predicted enhancers, and the [up/down]regulated genes from the RNA-seq.
+
+cut -d$'\t' -f4 ${INTERSECTION_dir}/s3_CTBP2_NPC_EPP2017_K27ac.bed | sort | uniq > ${INTERSECTION_dir}/t1_CTBP2_enhancer_targets.txt
+
+awk -F'\t' '{print $8}' ${annotated_peaks_dir}/CTBP2_NSC_annotated_peaks.txt | grep "promoter-TSS" | sed 's/promoter-TSS (//g' | sed 's/)//g' | sort | uniq > ${INTERSECTION_dir}/t2_CTBP2_promoter_targets.txt
+
+cat ${INTERSECTION_dir}/t1_CTBP2_enhancer_targets.txt ${INTERSECTION_dir}/t2_CTBP2_promoter_targets.txt | sort | uniq > ${INTERSECTION_dir}/t3_CTBP2_enhancer_and_promoter_targets.txt
+
+cp ${C_RNS_dir}/v5b_CtbpKD_upReg_genes.txt ${INTERSECTION_dir}/
+mv ${INTERSECTION_dir}/v5b_CtbpKD_upReg_genes.txt ${INTERSECTION_dir}/t4_CtbpKD_upReg_genes.txt
+
+cp ${C_RNS_dir}/v5c_CtbpKD_downReg_genes.txt ${INTERSECTION_dir}/
+mv ${INTERSECTION_dir}/v5c_CtbpKD_downReg_genes.txt ${INTERSECTION_dir}/t5_CtbpKD_downReg_genes.txt
+
+grep -Fxf ${INTERSECTION_dir}/t3_CTBP2_enhancer_and_promoter_targets.txt ${INTERSECTION_dir}/t4_CtbpKD_upReg_genes.txt | sort | uniq > ${INTERSECTION_dir}/t6_CTBP2_upReg_targets.txt
+
+grep -Fxf ${INTERSECTION_dir}/t3_CTBP2_enhancer_and_promoter_targets.txt ${INTERSECTION_dir}/t5_CtbpKD_downReg_genes.txt | sort | uniq > ${INTERSECTION_dir}/t7_CTBP2_downReg_targets.txt
+
+cat ${INTERSECTION_dir}/t6_CTBP2_upReg_targets.txt ${INTERSECTION_dir}/t7_CTBP2_downReg_targets.txt | sort | uniq > ${INTERSECTION_dir}/t8_CTBP2_dysReg_targets.txt
+
+#Generating text for a log file that reports the numbers of target genes
+echo '' >> ./y1_Intersections.logfile
+echo 'There are' "$(grep -c . ${INTERSECTION_dir}/t1_CTBP2_enhancer_targets.txt)" 'genes whose enhancers overlap with CTBP2.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'There are' "$(grep -c . ${INTERSECTION_dir}/t2_CTBP2_promoter_targets.txt)" 'genes whose promoters overlap with CTBP2.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'Combining these two lists of genes results in' "$(grep -c . ${INTERSECTION_dir}/t3_CTBP2_enhancer_and_promoter_targets.txt)" 'putative target genes whose enhancers, promoters or both are bound by CTBP2.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'There are' "$(grep -c . ${INTERSECTION_dir}/t4_CtbpKD_upReg_genes.txt)" 'upregulated genes in the CtbpKD RNA-Seq.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'Intersecting the CTBP2 enhancer and promoter targets list with the CtbpKD RNA-Seq upregulated gene list results in' "$(grep -c . ${INTERSECTION_dir}/t6_CTBP2_upReg_targets.txt)" 'genes.' >> ./y1_Intersections.logfile
+echo 'In other words, these are genes whose enhancers, promoters or both are bound by CTBP2 and are upregulated with the knockdown of CTBP.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'There are' "$(grep -c . ${INTERSECTION_dir}/t5_CtbpKD_downReg_genes.txt)" 'downregulated genes in the CtbpKD RNA-Seq.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'Intersecting the CTBP2 enhancer and promoter targets list with the CtbpKD RNA-Seq downregulated gene list results in' "$(grep -c . ${INTERSECTION_dir}/t7_CTBP2_downReg_targets.txt)" 'genes.' >> ./y1_Intersections.logfile
+echo 'In other words, these are genes whose enhancers, promoters or both are bound by CTBP2 and are downregulated with the knockdown of CTBP.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'Combining these two lists results in' "$(grep -c . ${INTERSECTION_dir}/t8_CTBP2_dysReg_targets.txt)" 'dysregulated target genes whose enhancers, promoters, or both are bound by CTBP2.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+
+
+
+#Get the common genes that are the promoter annotated PRDM16 peaks, predicted enhancers, and the [up/down]regulated genes from the RNA-seq.
+
+cut -d$'\t' -f4 ${INTERSECTION_dir}/s2_PRDM16_NPC_EPP2017_K27ac.bed | sort | uniq > ${INTERSECTION_dir}/u1_PRDM16_enhancer_targets.txt
+
+awk -F'\t' '{print $8}' ${annotated_peaks_dir}/PRDM16_e_annotated_peaks.txt | grep "promoter-TSS" | sed 's/promoter-TSS (//g' | sed 's/)//g' | sort | uniq > ${INTERSECTION_dir}/u2_PRDM16_promoter_targets.txt
+
+cat ${INTERSECTION_dir}/u1_PRDM16_enhancer_targets.txt ${INTERSECTION_dir}/u2_PRDM16_promoter_targets.txt | sort | uniq > ${INTERSECTION_dir}/u3_PRDM16_enhancer_and_promoter_targets.txt
+
+cp ${P16_RNS_dir}/v1_upOrDownReg_genes_Prdm16KO_combined.txt ${INTERSECTION_dir}/
+mv ${INTERSECTION_dir}/v1_upOrDownReg_genes_Prdm16KO_combined.txt ${INTERSECTION_dir}/u4_Prdm16KO_dysReg_genes.txt
+
+grep -Fxf ${INTERSECTION_dir}/u3_PRDM16_enhancer_and_promoter_targets.txt ${INTERSECTION_dir}/u4_Prdm16KO_dysReg_genes.txt | sort | uniq > ${INTERSECTION_dir}/u5_PRDM16_dysReg_targets.txt
+
+#Generating text for a log file that reports the numbers of target genes
+echo '' >> ./y1_Intersections.logfile
+echo 'There are' "$(grep -c . ${INTERSECTION_dir}/u1_PRDM16_enhancer_targets.txt)" 'genes whose enhancers overlap with PRDM16.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'There are' "$(grep -c . ${INTERSECTION_dir}/u2_PRDM16_promoter_targets.txt)" 'genes whose promoters overlap with PRDM16.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'Combining these two lists of genes results in' "$(grep -c . ${INTERSECTION_dir}/u3_PRDM16_enhancer_and_promoter_targets.txt)" 'putative target genes whose enhancers, promoters or both are bound by PRDM16.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'There are' "$(grep -c . ${INTERSECTION_dir}/u4_Prdm16KO_dysReg_genes.txt)" 'dysregulated genes in the knockout of PRDM16' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'Intersecting the PRDM16 enhancer and promoter targets list with the PRDM16 RNA-Seq dyregulated gene list results in' "$(grep -c . ${INTERSECTION_dir}/u5_PRDM16_dysReg_targets.txt)" 'genes.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+
+
+#Intersections between CTBP2 and PRDM16.
+grep -Fxf ${INTERSECTION_dir}/t3_CTBP2_enhancer_and_promoter_targets.txt ${INTERSECTION_dir}/u3_PRDM16_enhancer_and_promoter_targets.txt | sort | uniq > ${INTERSECTION_dir}/v1_CTBP2_PRDM16_enhancer_and_promoter_targets.txt
+
+cat ${INTERSECTION_dir}/t8_CTBP2_dysReg_targets.txt ${INTERSECTION_dir}/u5_PRDM16_dysReg_targets.txt | sort | uniq > ${INTERSECTION_dir}/v2_union_of_CTBP2_and_PRDM16_dysReg_targets.txt
+
+grep -Fxf ${INTERSECTION_dir}/v1_CTBP2_PRDM16_enhancer_and_promoter_targets.txt ${INTERSECTION_dir}/v2_union_of_CTBP2_and_PRDM16_dysReg_targets.txt | sort | uniq > ${INTERSECTION_dir}/v3_CTBP2_PRDM16_targets_dysReg_either.txt
+
+grep -Fxf ${INTERSECTION_dir}/t8_CTBP2_dysReg_targets.txt ${INTERSECTION_dir}/u5_PRDM16_dysReg_targets.txt | sort | uniq > ${INTERSECTION_dir}/temp_file
+
+grep -Fxf ${INTERSECTION_dir}/temp_file ${INTERSECTION_dir}/v1_CTBP2_PRDM16_enhancer_and_promoter_targets.txt | sort | uniq > ${INTERSECTION_dir}/v4_CTBP2_PRDM16_targets_dysReg_both.txt
+
+rm -rf ${INTERSECTION_dir}/temp_file
+
+#Generating text for a log file that reports the numbers of intersected target genes between CTBP2 and PRDM16
+echo '' >> ./y1_Intersections.logfile
+echo 'There are' "$(grep -c . ${INTERSECTION_dir}/t3_CTBP2_enhancer_and_promoter_targets.txt)" 'genes whose enhancers, promoters, or both overlap with CTBP2.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'There are' "$(grep -c . ${INTERSECTION_dir}/u3_PRDM16_enhancer_and_promoter_targets.txt)" 'genes whose enhancers, promoters, or both overlap with PRDM16.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo 'Intersecting these two lists results in' "$(grep -c . ${INTERSECTION_dir}/v1_CTBP2_PRDM16_enhancer_and_promoter_targets.txt)" 'genes whose enhancers, promoters, or both are bound by both CTBP2 and PRDM16.' >> ./y1_Intersections.logfile
+echo '' >> ./y1_Intersections.logfile
+echo "$(grep -c . ${INTERSECTION_dir}/v3_CTBP2_PRDM16_targets_dysReg_either.txt)" 'of these genes are dysregulated in CtbpKD, Prdm16KO, or both.' >> ./y1_Intersections.logfile
+echo "$(grep -c . ${INTERSECTION_dir}/v4_CTBP2_PRDM16_targets_dysReg_both.txt)" 'of these genes are dysregulated in both.' >> ./y1_Intersections.logfile
+
+
+# Regions of CtBP2 that do not overlap with PRDM16
+bedtools intersect \
+	-a ${REP_PEAKS_dir}/CTBP2_NSC_final_peaks.bed \
+	-b ${REP_PEAKS_dir}/PRDM16_e_final_peaks.bed \
+	-v > ${INTERSECTION_dir}/CtBP2_minus_PRDM16.bed
+	
+	
+experiment="CtBP2_minus_PRDM16"
+
+annotatePeaks.pl \
+	${INTERSECTION_dir}/${experiment}.bed \
+	mm39 \
+	-size given \
+	> ${INTERSECTION_dir}/${experiment}_annotated_peaks.txt
+   
+awk -F'\t' '{print $8}' ${INTERSECTION_dir}/${experiment}_annotated_peaks.txt | grep "exon" > ${INTERSECTION_dir}/${experiment}_exon_lines.txt
+awk -F'\t' '{print $8}' ${INTERSECTION_dir}/${experiment}_annotated_peaks.txt | grep "intron" > ${INTERSECTION_dir}/${experiment}_intron_lines.txt
+awk -F'\t' '{print $8}' ${INTERSECTION_dir}/${experiment}_annotated_peaks.txt | grep "Intergenic" > ${INTERSECTION_dir}/${experiment}_Intergenic_lines.txt
+awk -F'\t' '{print $8}' ${INTERSECTION_dir}/${experiment}_annotated_peaks.txt | grep "promoter-TSS" > ${INTERSECTION_dir}/${experiment}_promoter_lines.txt
+awk -F'\t' '{print $8}' ${INTERSECTION_dir}/${experiment}_annotated_peaks.txt | grep "TTS" > ${INTERSECTION_dir}/${experiment}_TTS_lines.txt
+
+#the "wh" in all_lines_wh stands for "with header". The header is an additional line that we need to remove from the counting as done in all_lines_int
+all_lines_wh=$(grep -c . ${INTERSECTION_dir}/${experiment}_annotated_peaks.txt)
+all_lines_int=$(echo "$all_lines_wh - 1" | bc)
+all_lines=$(echo "$all_lines_int + 0.0" | bc)
+exon_lines_int=$(grep -c . ${INTERSECTION_dir}/${experiment}_exon_lines.txt) 
+exon_lines=$(echo "$exon_lines_int + 0.0" | bc)
+intronic_lines_int=$(grep -c . ${INTERSECTION_dir}/${experiment}_intron_lines.txt)
+intronic_lines=$(echo "$intronic_lines_int + 0.0" | bc)
+intergenic_lines_int=$(grep -c . ${INTERSECTION_dir}/${experiment}_Intergenic_lines.txt)
+intergenic_lines=$(echo "$intergenic_lines_int + 0.0" | bc)
+promoter_lines_int=$(grep -c . ${INTERSECTION_dir}/${experiment}_promoter_lines.txt) 
+promoter_lines=$(echo "$promoter_lines_int + 0.0" | bc)
+TTS_lines_int=$(grep -c . ${INTERSECTION_dir}/${experiment}_TTS_lines.txt) 
+TTS_lines=$(echo "$TTS_lines_int + 0.0" | bc)
+
+a=$(echo "scale=2; $exon_lines * 100 / $all_lines" | bc)
+b=$(echo "scale=2; $intronic_lines * 100 / $all_lines" | bc)
+c=$(echo "scale=2; $intergenic_lines * 100 / $all_lines" | bc)
+d=$(echo "scale=2; $promoter_lines * 100 / $all_lines" | bc)
+e=$(echo "scale=2; $TTS_lines * 100 / $all_lines" | bc)
+
+echo "The number of reproduced" ${experiment} "peaks is" $all_lines_int > ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "The number of exonic" ${experiment} "peaks is" $exon_lines_int >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "The number of intronic" ${experiment} "peaks is" $intronic_lines_int >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "The number of intergenic" ${experiment} "peaks is" $intergenic_lines_int >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "The number of promoter" ${experiment} "peaks is" $promoter_lines_int >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "The number of TTS" ${experiment} "peaks is" $TTS_lines_int >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "The percentage of exonic" ${experiment} "peaks is" $a"%" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "The percentage of intronic" ${experiment} "peaks is" $b"%" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "The percentage of intergenic" ${experiment} "peaks is" $c"%"  >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "The percentage of promoter" ${experiment} "peaks is" $d"%"  >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "" >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+echo "The percentage of TTS" ${experiment} "peaks is" $e"%"  >> ${INTERSECTION_dir}/Percentages_${experiment}_peaks.txt
+
+rm -rf ${INTERSECTION_dir}/${experiment}_exon_lines.txt
+rm -rf ${INTERSECTION_dir}/${experiment}_intron_lines.txt
+rm -rf ${INTERSECTION_dir}/${experiment}_Intergenic_lines.txt
+rm -rf ${INTERSECTION_dir}/${experiment}_promoter_lines.txt
+rm -rf ${INTERSECTION_dir}/${experiment}_TTS_lines.txt
+
+
+
+# Get the CtBP2 minus PRDM16 peaks that are annotated as promoter peaks and list of genes whose promoters are bound by CtBP2 minus PRDM16
+
+awk -F'\t' '{print $8}' \
+	${INTERSECTION_dir}/${experiment}_annotated_peaks.txt \
+	| grep "promoter-TSS" \
+	| sed 's/promoter-TSS (//g' \
+	| sed 's/)//g' \
+	| sort | uniq \
+	> ${INTERSECTION_dir}/${experiment}_promoter_targets.txt
+
+
+# Overlap the CtBP2 minus PRDM16 promoter targets list with the downregulated CtBP knockdown genes list
+
+grep -Fxf \
+	${INTERSECTION_dir}/${experiment}_promoter_targets.txt \
+	${C_RNS_dir}/v5c_CtbpKD_downReg_genes.txt \
+	| sort | uniq \
+	> ${INTERSECTION_dir}/CtBP2_activation_target_genes.txt
+
+
+grep promoter ${INTERSECTION_dir}/${experiment}_annotated_peaks.txt > ${INTERSECTION_dir}/${experiment}_promoter_peaks_to_clean.bed
+
+cut -d$'\t' -f2- ${INTERSECTION_dir}/${experiment}_promoter_peaks_to_clean.bed > ${INTERSECTION_dir}/${experiment}_promoter_peaks.bed
+
+rm -rf ${INTERSECTION_dir}/${experiment}_promoter_peaks_to_clean.bed
+
+awk 'BEGIN{FS=OFS="\t"} NR==FNR{a[$1]; next} {if (match($7, /\(([^)]+)\)/, arr)) {if (arr[1] in a) print }}' ${INTERSECTION_dir}/CtBP2_activation_target_genes.txt ${INTERSECTION_dir}/${experiment}_promoter_peaks.bed > ${INTERSECTION_dir}/CtBP2_activation_target_genes_peaks.txt

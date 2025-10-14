@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+
+
+shopt -s expand_aliases
+
+# Run this script from within the PRDM16_CtBP_Project singularity container, e.g.
+# with "rws" specified as follows:
+#
+workdir=${PWD}/..
+SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
+
+alias rws="singularity exec -e -B${workdir} ${SIF}"
+
+
+# 1. Perform the intersections using BEDTools and gene list extactions
+rws bash ./x1_Intersections
+
+# 2. Perform the Motif analysis on CTBP2 and PRDM16_CTBP2 intersection
+rws bash ./x2_Motif_Analysis
+
+# 3. Generate the enrichment heat maps for the ChIP-seq and ATAC-seq data; and generate the integrative dot plots and heat maps for the RNA-seq differentially expressed genes
+rws bash ./x3a_get_Heat_Maps_and_Plots
+rws Rscript ./x3b_rns_dot_plots_and_heat_maps.R

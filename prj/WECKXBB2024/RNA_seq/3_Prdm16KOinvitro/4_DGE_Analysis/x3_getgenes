@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+
+
+#Extracting the list of upregulated and downregulated genes
+
+awk -F' ' '{print $1}' ./v2c_Prdm16KO_DGE_Matrix_NA_omitted_filtered.tsv | sed 's/"//g' | sed '1d' | sort | uniq > ./v5a_Prdm16KO_upOrDownReg_genes.txt
+
+awk -F' ' '{print $1}' ./v2d_Prdm16KO_DGE_Matrix_significantly_upReg.tsv | sed 's/"//g' | sed '1d' | sort | uniq > ./v5b_Prdm16KO_upReg_genes.txt
+
+awk -F' ' '{print $1}' ./v2e_Prdm16KO_DGE_Matrix_significantly_downReg.tsv | sed 's/"//g' | sed '1d' | sort | uniq > ./v5c_Prdm16KO_downReg_genes.txt

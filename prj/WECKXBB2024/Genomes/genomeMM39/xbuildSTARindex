@@ -1,22 +1,17 @@
 #!/bin/bash
 #
-shopt -s expand_aliases
 
-# Specify the working directory and the PRDM16_CtBP_Project singularity image file:
-#
-workdir=${PWD}/../..
-CONTAINER=${workdir}/Tools/PRDM16_CtBP_Project.sif
 
-alias rws="singularity exec -e -B${workdir} $CONTAINER"
+mkdir ./mm39STARidx
 
-NTHREADS=16
 STARidx=./mm39STARidx
 GENOME=./BSgenome.Mmusculus.UCSC.mm39chrs.fa
 GTFfile=./mm39.gtf
+NTHREADS=16
 
 
 # Generate the STAR index for mm39
-rws  STAR \
+STAR \
 	--runThreadN ${NTHREADS} \
 	--runMode genomeGenerate \
 	--genomeDir ${STARidx} \

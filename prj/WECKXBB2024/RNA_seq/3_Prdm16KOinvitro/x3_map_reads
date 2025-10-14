@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+
+
+#Define the variables and directories
+NTHREADS=16
+STARidx=../../Genomes/genomeMM39/mm39STARidx
+aln_dir=./3_Alignments
+GTFfile=../../Genomes/genomeMM39/mm39.gtf
+
+
+
+# Mapping the bulk RNA-seq datasets
+for sample in Prdm16WT_1 Prdm16WT_2 Prdm16WT_3 Prdm16KO_1 Prdm16KO_2 Prdm16KO_3
+do
+	mkdir ${aln_dir}/${sample}
+	STAR \
+		--runThreadN ${NTHREADS} \
+		--genomeDir ${STARidx} \
+		--readFilesIn \
+			./2_Trimmed_Reads/${sample}_R1.fq \
+			./2_Trimmed_Reads/${sample}_R2.fq \
+		--outFileNamePrefix ${aln_dir}/${sample}/${sample}_ \
+		--outSAMattributes All \
+		--outSAMtype BAM SortedByCoordinate \
+		--outFilterMismatchNmax 10 \
+		--outFilterMultimapNmax 10 \
+		--alignEndsType EndToEnd \
+		--quantMode GeneCounts \
+		--twopassMode Basic \
+		--sjdbGTFfile ${GTFfile}
+done
+
+
+# Indexing the BAM files
+for file in Prdm16WT_1 Prdm16WT_2 Prdm16WT_3 Prdm16KO_1 Prdm16KO_2 Prdm16KO_3
+do
+	samtools index -@ ${NTHREADS} ${aln_dir}/${file}/${file}_Aligned.sortedByCoord.out.bam
+	bash ../../Tools/xcountSAMtypes ${aln_dir}/${file}/${file}_Aligned.sortedByCoord.out.bam > ${aln_dir}/${file}/${file}.counts
+done

@@ -1,8 +1,9 @@
 #!/bin/bash
 #
 
-workdir=${PWD}/..
-peaks_dir=${workdir}/ChIP_seq/4_Peaks
+
+peaks_dir=./4_Peaks
+mkdir ${peaks_dir}/Reproduced_Peaks
 REP_PEAKS_dir=${peaks_dir}/Reproduced_Peaks
 
 
@@ -10,11 +11,11 @@ REP_PEAKS_dir=${peaks_dir}/Reproduced_Peaks
 
 for sample in PRDM16_e HDAC1_e LSD1_e CTCF_wb H3K4me3_e H3K27ac_e H3K4me1_e
 do
-   bedtools intersect \
-         -wo -f 0.3 -r \
-         -a ${peaks_dir}/${sample}_1/${sample}_1_filtered.bed \
-         -b ${peaks_dir}/${sample}_2/${sample}_2_filtered.bed \
-         > ${REP_PEAKS_dir}/${sample}_final_peaks.bed
+	bedtools intersect \
+		-wo -f 0.3 -r \
+		-a ${peaks_dir}/${sample}_1/${sample}_1_filtered.bed \
+		-b ${peaks_dir}/${sample}_2/${sample}_2_filtered.bed \
+		> ${REP_PEAKS_dir}/${sample}_final_peaks.bed
 done
 
 
@@ -22,29 +23,29 @@ done
 
 for CTBP2peakFile in CTBP2_e CTBP2wt_n
 do
-   mergePeaks -d given \
-         ${peaks_dir}/${CTBP2peakFile}_1/${CTBP2peakFile}_1_filtered.bed \
-         ${peaks_dir}/${CTBP2peakFile}_2/${CTBP2peakFile}_2_filtered.bed \
-         > ${REP_PEAKS_dir}/${CTBP2peakFile}_merged.bed
-         
-   pos2bed.pl ${REP_PEAKS_dir}/${CTBP2peakFile}_merged.bed \
-         > ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks_with_header.bed
-         
-   sed '1d' ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks_with_header.bed \
-         > ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks.bed
-         
-   rm -rf ${REP_PEAKS_dir}/${CTBP2peakFile}_merged.bed
-   rm -rf ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks_with_header.bed
+	mergePeaks -d given \
+		${peaks_dir}/${CTBP2peakFile}_1/${CTBP2peakFile}_1_filtered.bed \
+		${peaks_dir}/${CTBP2peakFile}_2/${CTBP2peakFile}_2_filtered.bed \
+		> ${REP_PEAKS_dir}/${CTBP2peakFile}_merged.bed
+
+	pos2bed.pl ${REP_PEAKS_dir}/${CTBP2peakFile}_merged.bed \
+		> ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks_with_header.bed
+
+	sed '1d' ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks_with_header.bed \
+		> ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks.bed
+
+	rm -rf ${REP_PEAKS_dir}/${CTBP2peakFile}_merged.bed
+	rm -rf ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks_with_header.bed
 done
 
 
 #Final NSC CTBP2 peaks
 
 bedtools intersect \
-      -wo -f 0.3 -r \
-      -a ${REP_PEAKS_dir}/CTBP2_e_union_peaks.bed \
-      -b ${REP_PEAKS_dir}/CTBP2wt_n_union_peaks.bed \
-      > ${REP_PEAKS_dir}/CTBP2_NSC_final_peaks.bed
+	-wo -f 0.3 -r \
+	-a ${REP_PEAKS_dir}/CTBP2_e_union_peaks.bed \
+	-b ${REP_PEAKS_dir}/CTBP2wt_n_union_peaks.bed \
+	> ${REP_PEAKS_dir}/CTBP2_NSC_final_peaks.bed
 
 #Get the log file for the reproduced peaks
 #

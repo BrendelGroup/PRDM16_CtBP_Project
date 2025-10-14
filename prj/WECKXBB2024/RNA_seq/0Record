@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+
+
+cd ./1_CtbpKD
+bash ./0Record
+cd ..
+
+cd ./2_Prdm16KOinvivo
+bash ./0Record
+cd ..
+
+cd ./3_Prdm16KOinvitro
+bash ./0Record
+cd ..

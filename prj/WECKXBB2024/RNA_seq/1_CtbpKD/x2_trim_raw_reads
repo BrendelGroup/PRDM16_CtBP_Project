@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+
+
+rawData_dir=./1_Raw_Reads
+trimmedReads_dir=./2_Trimmed_Reads
+
+
+cd ${trimmedReads_dir}
+bash ./xqctrl
+
+
+# Summary:
+#
+bash ./xmv
+
+seqkit stats -j 13 *fq > summary.stats
+seqkit stats -j 13 *fq -T > summary.tsv
+
+cd ..

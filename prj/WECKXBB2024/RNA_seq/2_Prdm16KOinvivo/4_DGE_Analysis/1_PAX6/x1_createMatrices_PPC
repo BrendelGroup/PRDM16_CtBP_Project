@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+
+
+# Specify the directory for the BAM files
+BAM_FILES_DIR=../../3_Alignments
+
+
+
+# Extracting the gene names column
+cut -d$'\t' -f1 ${BAM_FILES_DIR}/Prdm16WT_PPC_1/Prdm16WT_PPC_1_ReadsPerGene.out.tab > ./gene_column.tsv
+
+
+# Extracting the needed columns from the gene counts files
+
+RNS_EXPERIMENTS="Prdm16WT_PPC_1 Prdm16WT_PPC_2 Prdm16WT_PPC_3 Prdm16WT_PPC_4 Prdm16KO_PPC_1 Prdm16KO_PPC_2 Prdm16KO_PPC_3 Prdm16KO_PPC_4"
+
+for experiment in ${RNS_EXPERIMENTS}
+do
+	cut -d$'\t' -f2 ${BAM_FILES_DIR}/${experiment}/${experiment}_ReadsPerGene.out.tab > ./${experiment}_counts_column.tsv
+done
+
+
+# Pasting the extracted columns in a raw counts matrix file and removing the temporary files
+
+paste gene_column.tsv Prdm16WT_PPC_1_counts_column.tsv Prdm16WT_PPC_2_counts_column.tsv Prdm16WT_PPC_3_counts_column.tsv Prdm16WT_PPC_4_counts_column.tsv Prdm16KO_PPC_1_counts_column.tsv Prdm16KO_PPC_2_counts_column.tsv Prdm16KO_PPC_3_counts_column.tsv Prdm16KO_PPC_4_counts_column.tsv > Prdm16KO_PPC_raw_counts_to_clean.tsv
+
+sed -i '1,4d' Prdm16KO_PPC_raw_counts_to_clean.tsv
+
+echo -e "gene_id\tPrdm16WT_PPC_1\tPrdm16WT_PPC_2\tPrdm16WT_PPC_3\tPrdm16WT_PPC_4\tPrdm16KO_PPC_1\tPrdm16KO_PPC_2\tPrdm16KO_PPC_3\tPrdm16KO_PPC_4" > Prdm16KO_PPC_raw_counts_headers.tsv
+
+cat Prdm16KO_PPC_raw_counts_headers.tsv Prdm16KO_PPC_raw_counts_to_clean.tsv > v1a_Prdm16KO_PPC_raw_counts.tsv
+
+rm -rf gene_column.tsv
+rm -rf *_counts_column.tsv
+rm -rf Prdm16KO_PPC_raw_counts_*.tsv
+
+
+# Creating the samples to conditions matrix
+
+echo -e "sample\tcondition" > temp_row_1.tsv
+echo -e "Prdm16WT_PPC_1\tWT" > temp_row_2.tsv
+echo -e "Prdm16WT_PPC_2\tWT" > temp_row_3.tsv
+echo -e "Prdm16WT_PPC_3\tWT" > temp_row_4.tsv
+echo -e "Prdm16WT_PPC_4\tWT" > temp_row_5.tsv
+echo -e "Prdm16KO_PPC_1\tKO" > temp_row_6.tsv
+echo -e "Prdm16KO_PPC_2\tKO" > temp_row_7.tsv
+echo -e "Prdm16KO_PPC_3\tKO" > temp_row_8.tsv
+echo -e "Prdm16KO_PPC_4\tKO" > temp_row_9.tsv
+
+cat temp_* > v1b_Prdm16KO_PPC_samples_to_conditions.tsv
+
+rm -rf temp_*

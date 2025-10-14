@@ -18,4 +18,4 @@ rws gth -help
 
 Of course this assumes that you have [Apptainer/Singularity](https://apptainer.org/) installed on your system.
 Check whether there is package built for your system.
-Otherwise, follow the instructions to [install Singularity from source code](https://apptainer.org/user-docs/master/quick_start.html#quick-installation-steps).
+Otherwise, follow the instructions to [install Apptainer from source code](https://apptainer.org/user-docs/master/quick_start.html#quick-installation-steps).

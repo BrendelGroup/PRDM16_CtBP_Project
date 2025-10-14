@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+
+
+mv CtbpCTL_1/CtbpCTL_1_Aligned.sortedByCoord.out.bam CtbpCTL_1.bam
+mv CtbpCTL_2/CtbpCTL_2_Aligned.sortedByCoord.out.bam CtbpCTL_2.bam
+mv CtbpCTL_3/CtbpCTL_3_Aligned.sortedByCoord.out.bam CtbpCTL_3.bam
+mv CtbpCTL_4/CtbpCTL_4_Aligned.sortedByCoord.out.bam CtbpCTL_4.bam
+mv CtbpKD_1/CtbpKD_1_Aligned.sortedByCoord.out.bam CtbpKD_1.bam
+mv CtbpKD_2/CtbpKD_2_Aligned.sortedByCoord.out.bam CtbpKD_2.bam
+mv CtbpKD_3/CtbpKD_3_Aligned.sortedByCoord.out.bam CtbpKD_3.bam
+mv CtbpKD_4/CtbpKD_4_Aligned.sortedByCoord.out.bam CtbpKD_4.bam
+
+
+for file in CtbpCTL_1 CtbpCTL_2 CtbpCTL_3 CtbpCTL_4 CtbpKD_1 CtbpKD_2 CtbpKD_3 CtbpKD_4
+do
+	samtools index ${file}.bam
+	bash ../../../Tools/xcountSAMtypes ${file}.bam > ${file}.counts
+done

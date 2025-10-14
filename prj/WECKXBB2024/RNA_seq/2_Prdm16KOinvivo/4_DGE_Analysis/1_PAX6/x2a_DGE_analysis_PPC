@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+
+
+#Executing the RNA-Seq DGE Analysis script
+Rscript ./x2b_DGE_analysis_PPC.R

@@ -1,10 +1,11 @@
 #!/bin/bash
 #
 
+
 bt2idx=../../../Genomes/genomeMM39DM6/MM39DM6
-FASTQdir=../../2_Clean_Reads
-bt2_threads=24
-st_threads=24
+FASTQdir=../../2_Trimmed_Reads
+bt2_threads=16
+st_threads=16
 SAMPLE=$1
 
 
@@ -42,7 +43,7 @@ samtools view -h ${SAMPLE}.sam |\
 	grep "	DM6" | sed -e "s/	DM6/	/;" \
 	>> ${SAMPLE}.dm6.sam
 
-# 4. Make sorted and indexed BAM files from the species specific SAM files:
+# 4. Make sorted and indexed BAM files from the species-specific SAM files:
 #
 samtools view -h -b -@ ${st_threads} ./${SAMPLE}.mm39.sam \
 	| samtools sort -@ ${st_threads} -o ${SAMPLE}.mm39.bam -

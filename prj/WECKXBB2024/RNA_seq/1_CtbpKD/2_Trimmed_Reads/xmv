@@ -1,0 +1,16 @@
+mv CtbpCTL_1/CtbpCTL_1_R1.fq ./
+mv CtbpCTL_1/CtbpCTL_1_R2.fq ./
+mv CtbpCTL_2/CtbpCTL_2_R1.fq ./
+mv CtbpCTL_2/CtbpCTL_2_R2.fq ./
+mv CtbpCTL_3/CtbpCTL_3_R1.fq ./
+mv CtbpCTL_3/CtbpCTL_3_R2.fq ./
+mv CtbpCTL_4/CtbpCTL_4_R1.fq ./
+mv CtbpCTL_4/CtbpCTL_4_R2.fq ./
+mv CtbpKD_1/CtbpKD_1_R1.fq ./
+mv CtbpKD_1/CtbpKD_1_R2.fq ./
+mv CtbpKD_2/CtbpKD_2_R1.fq ./
+mv CtbpKD_2/CtbpKD_2_R2.fq ./
+mv CtbpKD_3/CtbpKD_3_R1.fq ./
+mv CtbpKD_3/CtbpKD_3_R2.fq ./
+mv CtbpKD_4/CtbpKD_4_R1.fq ./
+mv CtbpKD_4/CtbpKD_4_R2.fq ./

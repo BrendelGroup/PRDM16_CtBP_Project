@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+
+
+for file in Prdm16WT_1 Prdm16WT_2 Prdm16WT_3 Prdm16KO_1 Prdm16KO_2 Prdm16KO_3
+do
+	mv ${file}/${file}_R1.fq ./
+	mv ${file}/${file}_R2.fq ./
+done

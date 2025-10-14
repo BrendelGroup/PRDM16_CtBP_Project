@@ -1,11 +1,11 @@
 #!/bin/bash
 #
 
+
 #Generate counts of reads that mapped to dm6 or mm39, respectively, for the spiked-in samples.
 # The counts will be used to calculate the normalization scale factors.
 
-workdir=${PWD}/..
-BAM_NSC_dir=${workdir}/ChIP_seq/3_Alignments/bt2VSmm39dm6
+BAM_NSC_dir=./3_Alignments/bt2VSmm39dm6
 
 
 #Count the reads in the mapped spiked ChIP-Seq experiments (drosophila and mouse reads)

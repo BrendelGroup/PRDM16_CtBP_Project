@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+
+
 shopt -s expand_aliases
 
 # Run this script from within the PRDM16_CtBP_Project singularity container, e.g.
@@ -47,7 +49,7 @@ wget https://hgdownload.soe.ucsc.edu/goldenPath/mm39/bigZips/genes/mm39.ncbiRefS
 gunzip mm39.ncbiRefSeq.gtf.gz
 mv mm39.ncbiRefSeq.gtf mm39.gtf
 
-time bash ./xbuildSTARindex
+time rws bash ./xbuildSTARindex
 
 #real	30m27.137s
 #user	242m7.815s

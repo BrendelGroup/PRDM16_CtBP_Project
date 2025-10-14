@@ -1,0 +1,70 @@
+#!/bin/bash
+#
+
+
+SAMPLES="Prdm16WT_PPC_1 Prdm16WT_PPC_2 Prdm16WT_PPC_3 Prdm16WT_PPC_4"
+DOWNLOADdir=../1_Raw_Reads
+NTHREADS=4
+
+for i in ${SAMPLES}
+do
+	mkdir ./${i}
+	cd ./${i}
+	\cp ../Makefile_SEreadPreparation_template ./Makefile_SEreadPreparation_${i}
+	sed -i "s/SAMPLE         = LABEL/SAMPLE         = $i/;" ./Makefile_SEreadPreparation_${i}
+	sed -i "s#FASTQDIR       = ../../../DOWNLOADdir#FASTQDIR       = ../${DOWNLOADdir}#;" ./Makefile_SEreadPreparation_${i}
+	(make -j $NTHREADS -I../ -I../../ -f ./Makefile_SEreadPreparation_${i} >& ./err_${i}) &
+	cd ..
+done
+wait
+
+
+SAMPLES="Prdm16KO_PPC_1 Prdm16KO_PPC_2 Prdm16KO_PPC_3 Prdm16KO_PPC_4"
+DOWNLOADdir=../1_Raw_Reads
+NTHREADS=4
+
+for i in ${SAMPLES}
+do
+	mkdir ./${i}
+	cd ./${i}
+	\cp ../Makefile_SEreadPreparation_template ./Makefile_SEreadPreparation_${i}
+	sed -i "s/SAMPLE         = LABEL/SAMPLE         = $i/;" ./Makefile_SEreadPreparation_${i}
+	sed -i "s#FASTQDIR       = ../../../DOWNLOADdir#FASTQDIR       = ../${DOWNLOADdir}#;" ./Makefile_SEreadPreparation_${i}
+	(make -j $NTHREADS -I../ -I../../ -f ./Makefile_SEreadPreparation_${i} >& ./err_${i}) &
+	cd ..
+done
+wait
+
+
+SAMPLES="Prdm16WT_TPC_1 Prdm16WT_TPC_2 Prdm16WT_TPC_3 Prdm16WT_TPC_4"
+DOWNLOADdir=../1_Raw_Reads
+NTHREADS=4
+
+for i in ${SAMPLES}
+do
+	mkdir ./${i}
+	cd ./${i}
+	\cp ../Makefile_SEreadPreparation_template ./Makefile_SEreadPreparation_${i}
+	sed -i "s/SAMPLE         = LABEL/SAMPLE         = $i/;" ./Makefile_SEreadPreparation_${i}
+	sed -i "s#FASTQDIR       = ../../../DOWNLOADdir#FASTQDIR       = ../${DOWNLOADdir}#;" ./Makefile_SEreadPreparation_${i}
+	(make -j $NTHREADS -I../ -I../../ -f ./Makefile_SEreadPreparation_${i} >& ./err_${i}) &
+	cd ..
+done
+wait
+
+
+SAMPLES="Prdm16KO_TPC_1 Prdm16KO_TPC_2 Prdm16KO_TPC_3 Prdm16KO_TPC_4"
+DOWNLOADdir=../1_Raw_Reads
+NTHREADS=4
+
+for i in ${SAMPLES}
+do
+	mkdir ./${i}
+	cd ./${i}
+	\cp ../Makefile_SEreadPreparation_template ./Makefile_SEreadPreparation_${i}
+	sed -i "s/SAMPLE         = LABEL/SAMPLE         = $i/;" ./Makefile_SEreadPreparation_${i}
+	sed -i "s#FASTQDIR       = ../../../DOWNLOADdir#FASTQDIR       = ../${DOWNLOADdir}#;" ./Makefile_SEreadPreparation_${i}
+	(make -j $NTHREADS -I../ -I../../ -f ./Makefile_SEreadPreparation_${i} >& ./err_${i}) &
+	cd ..
+done
+wait

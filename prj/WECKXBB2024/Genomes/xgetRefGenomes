@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+
+
+# Execute the record files in each reference genome directory. These record files download and index the refernce genomes needed for the downstream analyses. Read the 0Record files inside the directories for more details on what they are doing. 
+
+cd ./genomeMM39
+bash ./0Record
+cd ..
+
+cd ./genomeDM6
+bash ./0Record
+cd ..
+
+cd ./genomeMM39DM6
+bash ./0Record
+cd ..

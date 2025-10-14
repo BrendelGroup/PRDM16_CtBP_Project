@@ -1,13 +1,13 @@
 #!/bin/bash
 #
 
-workdir=${PWD}/..
-RAW_DATA_dir=${workdir}/ChIP_seq/1_Raw_Reads
+
+RAW_DATA_dir=./1_Raw_Reads
 
 
 #This is a for loop that downloads the previously published ChIP-seq raw data that we used for our paper
 #
-for acc in SRR6823762 SRR6823763 SRR6823764 SRR6823765 SRR6823766 SRR6823767 SRR6823768 SRR6823769 SRR6823782 SRR6823783 SRR6823784 SRR6823785 SRR6823786 SRR6823787 SRR6823788 SRR6823789 SRR6823790 SRR6823791 SRR6823774 SRR6823775 SRR6823776 SRR6823777 SRR3651517 SRR3651670 SRR3651516 SRR3651669 SRR578278 SRR489727 SRR578279 SRR578284 
+for acc in SRR6823762 SRR6823763 SRR6823764 SRR6823765 SRR6823766 SRR6823767 SRR6823768 SRR6823769 SRR6823782 SRR6823783 SRR6823784 SRR6823785 SRR6823786 SRR6823787 SRR6823788 SRR6823789 SRR6823790 SRR6823791 SRR6823774 SRR6823775 SRR6823776 SRR6823777 SRR3651517 SRR3651670 SRR3651516 SRR3651669 SRR578278 SRR489727 SRR578279 SRR578284
 do
 	echo ${acc} >> ${RAW_DATA_dir}/download.log
 	fasterq-dump ${acc} >> ${RAW_DATA_dir}/download.log 2>&1
@@ -50,12 +50,12 @@ mv ${RAW_DATA_dir}/SRR578284.fastq ${RAW_DATA_dir}/chs_INPUT_CTCF_wb_2.fastq
 
 #This is a for loop that downloads our published ChIP-seq raw data that we generated for our paper
 #
-: '
+
 for acc in SRR29778937 SRR29778936 SRR29778915 SRR29778914 SRR29778931 SRR29778930 SRR29778934 SRR29778933 SRR29778919 SRR29778925 SRR29778918 SRR29778920 SRR29778932
 do
-	echo ${acc} >> download.log
-	fasterq-dump ${acc} >> download.log 2>&1
-	echo -e "\n" >> download.log
+	echo ${acc} >> ${RAW_DATA_dir}/download.log
+	fasterq-dump ${acc} >> ${RAW_DATA_dir}/download.log 2>&1
+	echo -e "\n" >> ${RAW_DATA_dir}/download.log
 done
 
 # Move the raw data files to the "1_Raw_Reads" directory and rename them accordingly
@@ -103,4 +103,3 @@ mv ${RAW_DATA_dir}/SRR29778920_2.fastq ${RAW_DATA_dir}/chs_CTBP2ko_n_2_R2.fastq
 
 mv ${RAW_DATA_dir}/SRR29778932_1.fastq ${RAW_DATA_dir}/chs_INPUT_n_3_R1.fastq
 mv ${RAW_DATA_dir}/SRR29778932_2.fastq ${RAW_DATA_dir}/chs_INPUT_n_3_R2.fastq
-'

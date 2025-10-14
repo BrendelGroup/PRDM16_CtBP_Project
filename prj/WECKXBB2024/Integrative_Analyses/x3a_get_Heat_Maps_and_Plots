@@ -1,0 +1,471 @@
+#!/bin/bash
+#
+
+
+peaks_dir=../ChIP_seq/4_Peaks
+REP_PEAKS_dir=${peaks_dir}/Reproduced_Peaks
+annotated_peaks_dir=${peaks_dir}/Annotated_Peaks
+
+INTERSECTION_dir=./1_Intersections
+
+
+bigWig_DIR=../ChIP_seq/5_bigWigs
+
+ATS_dir=../ATAC_seq/4_bigWigs
+
+ref_dir=../Genomes/genomeMM39
+blacklist_regions=${ref_dir}/mm39.excluderanges.bed
+
+HEAT_MAPS_dir=./3_Heat_Maps_and_Plots
+
+
+
+###deepTools heat maps and profile projections
+
+#CTBP2_Promoter_and_Intergenic_Peaks
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		${annotated_peaks_dir}/CTBP2_NSC_promoter_peaks.bed \
+		${annotated_peaks_dir}/CTBP2_NSC_Intergenic_peaks.bed \
+	-S \
+		${bigWig_DIR}/CTBP2_e_n_average.bw \
+		${bigWig_DIR}/H3K4me3_e_average.bw \
+		${bigWig_DIR}/H3K27ac_e_average.bw \
+		${bigWig_DIR}/H3K4me1_e_average.bw \
+		${ATS_dir}/ats_e_average.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/CTBP2_Promoter_and_Intergenic_Peaks.gz
+
+plotHeatmap \
+	-m ${HEAT_MAPS_dir}/CTBP2_Promoter_and_Intergenic_Peaks.gz \
+	--whatToShow "heatmap and colorbar" \
+	--colorList \
+		"white,#6F2DA8" \
+		"white,#246BCE" \
+		"white,#DA9100" \
+		"white,#228B22" \
+		"white,#246BCE" \
+	--heatmapHeight 40 \
+	--heatmapWidth 6 \
+	-x "" \
+	-z \
+		"CTBP2 promoter peaks" \
+		"CTBP2 intergenic peaks" \
+	--zMin 0 0 0 0 0 \
+	--zMax 20 20 12 8 24 \
+	--samplesLabel \
+		CTBP2 \
+		H3K4me3 \
+		H3K27ac \
+		H3K4me1 \
+		ATAC-Seq \
+	-o ${HEAT_MAPS_dir}/Fig_2D.png
+
+
+#PRDM16_CTBP2_P16peaks
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		${REP_PEAKS_dir}/PRDM16_e_final_peaks.bed \
+	-S \
+		${bigWig_DIR}/PRDM16_e_average.bw \
+		${bigWig_DIR}/CTBP2_e_n_average.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/PRDM16_CTBP2_P16peaks.gz
+ 
+plotProfile \
+	-m ${HEAT_MAPS_dir}/PRDM16_CTBP2_P16peaks.gz \
+	--colors \
+		black \
+		"#6F2DA8" \
+	--samplesLabel \
+		PRDM16 \
+		CTBP2 \
+	--plotHeight 10 \
+	--plotWidth 12 \
+	--perGroup \
+	-z "" \
+	-o ${HEAT_MAPS_dir}/Fig_3A.png
+
+
+#PRDM16_CTBP2_H3K27ac_H3K4me1_Hi_C_Regions
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		./a1_Bonev_et_al_2017_EPP_NPC_liftover.bed \
+	-S \
+		${bigWig_DIR}/PRDM16_e_average.bw \
+		${bigWig_DIR}/CTBP2_e_n_average.bw \
+		${bigWig_DIR}/H3K27ac_e_average.bw \
+		${bigWig_DIR}/H3K4me1_e_average.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/PRDM16_CTBP2_H3K27ac_H3K4me1_Hi_C_Regions.gz
+
+plotHeatmap \
+	-m ${HEAT_MAPS_dir}/PRDM16_CTBP2_H3K27ac_H3K4me1_Hi_C_Regions.gz \
+	--whatToShow "heatmap and colorbar" \
+	--colorList \
+		"white,black" \
+		"white,#6F2DA8" \
+		"white,#DA9100" \
+		"white,#228B22" \
+	--sortUsingSamples 1 2 \
+	--heatmapHeight 40 \
+	--heatmapWidth 6 \
+	-x "" \
+	-z "" \
+	--zMin 0 0 0 0 \
+	--zMax 10 10 14 14 \
+	--samplesLabel \
+		PRDM16 \
+		CTBP2 \
+		H3K27ac \
+		H3K4me1 \
+	-o ${HEAT_MAPS_dir}/Fig_3D.png
+
+
+#Spike_In_CTBP2_P16peaks
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		${REP_PEAKS_dir}/PRDM16_e_final_peaks.bed \
+	-S \
+		${bigWig_DIR}/CTBP2wt_n_average.bw \
+		${bigWig_DIR}/CTBP2ko_n_average.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/Spike_In_CTBP2_P16peaks.gz
+
+plotHeatmap \
+	-m ${HEAT_MAPS_dir}/Spike_In_CTBP2_P16peaks.gz \
+	--whatToShow "heatmap and colorbar" \
+	--colorList \
+		"white,#6F2DA8" \
+	--sortUsingSamples 1 2 \
+	--heatmapHeight 40 \
+	--heatmapWidth 6 \
+	-x "" \
+	-z "" \
+	--samplesLabel \
+		CTBP2wt_n \
+		CTBP2ko_n \
+	-o ${HEAT_MAPS_dir}/Fig_3H.png
+
+
+#PRDM16_HDAC1_P16peaks
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		${REP_PEAKS_dir}/PRDM16_e_final_peaks.bed \
+	-S \
+		${bigWig_DIR}/PRDM16_e_average.bw \
+		${bigWig_DIR}/HDAC1_e_average.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/PRDM16_HDAC1_P16peaks.gz
+
+plotProfile \
+	-m ${HEAT_MAPS_dir}/PRDM16_HDAC1_P16peaks.gz \
+	--colors \
+		black \
+		"#ED2839" \
+	--samplesLabel \
+		PRDM16 \
+		HDAC1 \
+	--plotHeight 10 \
+	--plotWidth 12 \
+	--perGroup \
+	-z "" \
+	-o ${HEAT_MAPS_dir}/Fig_4B.png
+
+
+#PRDM16_CTBP2_HDAC1_LSD1_P16peaks
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		${REP_PEAKS_dir}/PRDM16_e_final_peaks.bed \
+	-S \
+		${bigWig_DIR}/PRDM16_e_average.bw \
+		${bigWig_DIR}/CTBP2_e_n_average.bw \
+		${bigWig_DIR}/HDAC1_e_average.bw \
+		${bigWig_DIR}/LSD1_e_2.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/PRDM16_CTBP2_HDAC1_LSD1_P16peaks.gz
+
+plotHeatmap \
+	-m ${HEAT_MAPS_dir}/PRDM16_CTBP2_HDAC1_LSD1_P16peaks.gz \
+	--whatToShow "heatmap and colorbar" \
+	--colorList \
+		"white,black" \
+		"white,#6F2DA8" \
+		"white,#ED2839" \
+		"white,#246BCE" \
+	--sortUsingSamples 2 3 4 \
+	--heatmapHeight 40 \
+	--heatmapWidth 6 \
+	-x "" \
+	-z "" \
+	--zMin 0 0 0 0 \
+	--zMax 10 10 10 10 \
+	--samplesLabel \
+		PRDM16 \
+		CTBP2 \
+		HDAC1 \
+		LSD1 \
+	-o ${HEAT_MAPS_dir}/Fig_4C.png
+
+
+#CTBP2_CTCF_C2peaks
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		${REP_PEAKS_dir}/CTBP2_NSC_final_peaks.bed \
+	-S \
+		${bigWig_DIR}/CTBP2_e_n_average.bw \
+		${bigWig_DIR}/CTCF_wb_average.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/CTBP2_CTCF_C2peaks.gz
+
+plotHeatmap \
+	-m ${HEAT_MAPS_dir}/CTBP2_CTCF_C2peaks.gz \
+	--whatToShow "heatmap and colorbar" \
+	--colorList \
+		"white,#6F2DA8" \
+		"white,#DA9100" \
+	--sortUsingSamples 2 \
+	--heatmapHeight 40 \
+	--heatmapWidth 6 \
+	-x "" \
+	-z "" \
+	--zMin 0 0 \
+	--zMax 16 16 \
+	--samplesLabel \
+		CTBP2 \
+		CTCF \
+	-o ${HEAT_MAPS_dir}/Fig_5B.png
+
+
+#PRDM16_CTBP2_CTCF_P16peaks
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		${REP_PEAKS_dir}/PRDM16_e_final_peaks.bed \
+	-S \
+		${bigWig_DIR}/PRDM16_e_average.bw \
+		${bigWig_DIR}/CTBP2_e_n_average.bw \
+		${bigWig_DIR}/CTCF_wb_average.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/PRDM16_CTBP2_CTCF_P16peaks.gz
+
+plotHeatmap \
+	-m ${HEAT_MAPS_dir}/PRDM16_CTBP2_CTCF_P16peaks.gz \
+	--whatToShow "heatmap and colorbar" \
+	--colorList \
+		"white,black" \
+		"white,#6F2DA8" \
+		"white,#DA9100" \
+	--sortUsingSamples 1 2 3 \
+	--heatmapHeight 40 \
+	--heatmapWidth 6 \
+	-x "" \
+	-z "" \
+	--zMin 0 0 0 \
+	--zMax 8 8 8 \
+	--samplesLabel \
+		PRDM16 \
+		CTBP2 \
+		CTCF \
+	-o ${HEAT_MAPS_dir}/Fig_5C.png
+
+
+#CTBP2_SupFig
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		${REP_PEAKS_dir}/../CTBP2_e_1/CTBP2_e_1_filtered.bed \
+	-S \
+		${bigWig_DIR}/CTBP2_e_1.bw \
+		${bigWig_DIR}/CTBP2_e_2.bw \
+		${bigWig_DIR}/CTBP2wt_n_1.bw \
+		${bigWig_DIR}/CTBP2wt_n_2.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/CTBP2_SupFig.gz
+
+plotHeatmap \
+	-m ${HEAT_MAPS_dir}/CTBP2_SupFig.gz \
+	--colorList \
+		"white,#6F2DA8" \
+	--heatmapHeight 40 \
+	--heatmapWidth 6 \
+	-x "" \
+	-z "" \
+	--zMin 0 0 0 0 \
+	--zMax 12 14 14 14 \
+	--samplesLabel \
+		CTBP2_e_1 \
+		CTBP2_e_2 \
+		CTBP2wt_n_1 \
+		CTBP2wt_n_2 \
+	-o ${HEAT_MAPS_dir}/Fig_S2B.png
+
+
+#PRDM16_H3K27ac_H3K4me1_Hi_C_Regions
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		./a1_Bonev_et_al_2017_EPP_NPC_liftover.bed \
+	-S \
+		${bigWig_DIR}/PRDM16_e_average.bw \
+		${bigWig_DIR}/H3K27ac_e_average.bw \
+		${bigWig_DIR}/H3K4me1_e_average.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/PRDM16_H3K27ac_H3K4me1_Hi_C_Regions.gz
+
+plotHeatmap \
+	-m ${HEAT_MAPS_dir}/PRDM16_H3K27ac_H3K4me1_Hi_C_Regions.gz \
+	--whatToShow "heatmap and colorbar" \
+	--colorList \
+		"white,black" \
+		"white,#DA9100" \
+		"white,#228B22" \
+	--sortUsingSamples 1 \
+	--heatmapHeight 40 \
+	--heatmapWidth 6 \
+	-x "" \
+	-z "" \
+	--zMin 0 0 0 \
+	--zMax 10 12 10 \
+	--samplesLabel \
+		PRDM16 \
+		H3K27ac \
+		H3K4me1 \
+	-o ${HEAT_MAPS_dir}/Fig_S3A.png
+
+
+#PRDM16_CTBP2_H3K4me3_H3K27ac_H3K4me1_P16peaks
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		${REP_PEAKS_dir}/PRDM16_e_final_peaks.bed \
+	-S \
+		${bigWig_DIR}/PRDM16_e_average.bw \
+		${bigWig_DIR}/CTBP2_e_n_average.bw \
+		${bigWig_DIR}/H3K4me3_e_average.bw \
+		${bigWig_DIR}/H3K27ac_e_average.bw \
+		${bigWig_DIR}/H3K4me1_e_average.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/PRDM16_CTBP2_H3K4me3_H3K27ac_H3K4me1_P16peaks.gz
+
+plotProfile \
+	-m ${HEAT_MAPS_dir}/PRDM16_CTBP2_H3K4me3_H3K27ac_H3K4me1_P16peaks.gz \
+	--colors \
+		black \
+		"#6F2DA8" \
+		"#246BCE" \
+		"#DA9100" \
+		"#228B22" \
+	--samplesLabel \
+		PRDM16 \
+		CTBP2 \
+		H3K4me3 \
+		H3K27ac \
+		H3K4me1 \
+	--plotHeight 10 \
+	--plotWidth 12 \
+	--perGroup \
+	-z "" \
+	-o ${HEAT_MAPS_dir}/Fig_S3C.png
+
+
+#CTBP2_PRDM16_HDAC1_H3K4me3_in_promoters_C2minusP16
+
+computeMatrix reference-point --referencePoint center \
+	--numberOfProcessors max \
+	-R \
+		${INTERSECTION_dir}/CtBP2_activation_target_genes_peaks.txt \
+	-S \
+		${bigWig_DIR}/CTBP2_e_n_average.bw \
+		${bigWig_DIR}/PRDM16_e_average.bw \
+		${bigWig_DIR}/HDAC1_e_average.bw \
+		${bigWig_DIR}/H3K4me3_e_average.bw \
+	-b 3000 \
+	-a 3000 \
+	--missingDataAsZero \
+	--skipZeros \
+	--blackListFileName ${blacklist_regions} \
+	-o ${HEAT_MAPS_dir}/CTBP2_PRDM16_HDAC1_H3K4me3_in_promoters_C2minusP16.gz
+
+plotHeatmap \
+	-m ${HEAT_MAPS_dir}/CTBP2_PRDM16_HDAC1_H3K4me3_in_promoters_C2minusP16.gz \
+	--whatToShow "heatmap and colorbar" \
+	--colorList \
+		"white,#6F2DA8" \
+		"white,black" \
+		"white,#ED2839" \
+		"white,#246BCE" \
+	--heatmapHeight 40 \
+	--heatmapWidth 6 \
+	-x "" \
+	-z "" \
+	--zMin 2 0 1 0 \
+	--zMax 16 16 20 26 \
+	--samplesLabel \
+		CTBP2 \
+		PRDM16 \
+		HDAC1 \
+		H3K4me3 \
+	-o ${HEAT_MAPS_dir}/Fig_S4B.png

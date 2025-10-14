@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 
-workdir=${PWD}/..
-RAW_DATA_dir=${workdir}/ATAC_seq/1_Raw_Reads
+
+RAW_DATA_dir=./1_Raw_Reads
 
 #This is a for loop that downloads the previously published ATAC-seq raw data that we used for our paper
 #

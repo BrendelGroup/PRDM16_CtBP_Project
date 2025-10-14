@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+
+
 shopt -s expand_aliases
 
 # Run this script from within the PRDM16_CtBP_Project singularity container, e.g.
@@ -11,7 +13,7 @@ SIF=${workdir}/Tools/PRDM16_CtBP_Project.sif
 alias rws="singularity exec -e -B${workdir} ${SIF}"
 
 
-# 1. Acquiring the raw data for the H3K4me3 ChIP-Seq replicates from different developmental stages
+# 1. Acquiring the raw data for the previously published and new ChIP-seq experiments
 rws bash ./x1_download_raw_reads
 
 #    Derive summary statistics:
@@ -22,7 +24,7 @@ cd ..
 
 
 # 2. Clean the raw reads and run a quality check on them
-rws bash ./x2_clean_raw_reads
+rws bash ./x2_trim_raw_reads
 
 
 # 3. Align the cleaned raw reads into the the reference genome
@@ -33,11 +35,11 @@ rws bash ./x3_map_reads
 rws bash ./x4a_callPeaks
 rws bash ./x4b_filterBlacklistRegions >& ./y4b.logfile
 rws bash ./x4c_1_reproducePeaks
-rws bash ./x4d_annotateCTBP2Peaks >& y4d.logfile
+rws bash ./x4d_annotatePeaks >& y4d.logfile
 
 
 # 5. Generate the bigWig files and perform the spike-in normalization for the spiked-in samples
-rws bash ./x5a_get_bigWigs >& y5a_get_bigWigs_log.txt
+rws bash ./x5a_get_bigWigs >& y5a.logfile
 rws bash ./x5b_1_countReadsForSpikeIn > y5b_1.logfile
 rws bash ./x5b_2_get_bigWigs_spike_in >& y5b_2.logfile
 rws bash ./x5c_BW_Average

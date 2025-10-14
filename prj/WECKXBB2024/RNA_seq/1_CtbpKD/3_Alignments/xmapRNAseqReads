@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+
+
+# Map the RNA-seq reads using the STAR aligner:
+#
+NTHREADS=12
+STARidx=../../../Genomes/genomeMM39/mm39STARidx
+GTFfile=../../../Genomes/genomeMM39/mm39.gtf
+SAMPLES="CtbpCTL_1 CtbpCTL_2 CtbpCTL_3 CtbpCTL_4 CtbpKD_1 CtbpKD_2 CtbpKD_3 CtbpKD_4"
+
+for sample in ${SAMPLES}
+do
+	STAR --runThreadN ${NTHREADS} \
+		--genomeDir ${STARidx} \
+		--readFilesIn \
+			../2_Trimmed_Reads/${sample}_R1.fq \
+			../2_Trimmed_Reads/${sample}_R2.fq \
+		--outFileNamePrefix ${sample}_ \
+		--outSAMattributes All \
+		--outSAMtype BAM SortedByCoordinate \
+		--outFilterMismatchNmax 10 --outFilterMultimapNmax 10 \
+		--alignEndsType EndToEnd \
+		--quantMode GeneCounts --twopassMode Basic \
+		--sjdbGTFfile ${GTFfile}
+	mkdir ${sample}
+	mv ${sample}_* ${sample}
+done

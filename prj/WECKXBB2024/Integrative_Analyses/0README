@@ -1,0 +1,58 @@
+To reproduce the integrative analysis and generate the remainder of the figures for the paper, run the following command:
+bash ./0Record
+
+
+
+Information on the a[1/2] files is provided below.
+
+
+
+######
+One of the main parts of the integrative analyses that we performed is that we used published Hi-C predicted enhancer regions that interact with promoters known as enhancer-promoter pairs (EPP).
+
+
+We provided the file here in the repository but we will mention how we acquired and processed it for our analysis if you would like to do it yourself.
+
+
+The published paper is:
+Bonev, B., Cohen, N. M., Szabo, Q., Fritsch, L., Papadopoulos, G. L., Lubling, Y., ... & Cavalli, G. (2017). Multiscale 3D genome rewiring during mouse neural development. Cell, 171(3), 557-572.
+
+
+We downloaded their supplementary table (https://ars.els-cdn.com/content/image/1-s2.0-S0092867417311376-mmc3.xlsx)
+
+We then extracted the second sheet which is named "NPC" since the cells we are working with are mostly NPCs when it comes to our ChIP-seq.
+
+We subtracted 2,500 from each row of the start regions column and added 2,499 to each row in the end regions column because enhancers within 5kb were merged and the reported coordinates represent the centers of the intervals as they mentioned.
+
+We kept only the first four columns (chromosome number, start, end, and gene name)
+
+Then, since these coordinates were identified when the mm10 reference genome was used in their paper, we had to liftover these coordinates to the mm39 reference genome since this is the reference genome we used for our paper.
+
+We highlighted the four columns (excluding any headers) in that worksheet and went to (https://genome.ucsc.edu/cgi-bin/hgLiftOver), pasted it in the box and pressed "Submit" to the right of the box. Then, we scrolled a little down to the "Results" section and we clicked on "View Conversions" and a BED file including the lifted-over EPP coordinates was downloaded.
+
+This BED file will be used in our downstream integrative analyses, namely (a1_Bonev_et_al_2017_EPP_NPC_liftover.bed)
+######
+
+
+
+######
+Regarding the a2[a/b/c/d] files, cmg stands for cell migration genes, and ngg stands for neurogenesis genes.
+
+These genes have been extracted from the gene ontology analysis performed on some of the files in the "1_Intersections" folder.
+
+I provided them here for to simplify the reproducibility. If you want to generate them on your own, the information is provided below.
+
+The Gene Ontology analysis has been performed on lists of genes using Panther (https://geneontology.org).
+
+Paste the desired list of genes in the box on the right where it says: 
+GO Enrichment Analysis 
+Powered by PANTHER
+
+Make sure "biological process" is selected and "Mus musculus" is selected as the organism.
+
+Click on "Launch".
+
+After that, in a new browser tab, you will get the list of gene ontologies which provides you with information on what the genes you pasted are involved in.
+
+
+######

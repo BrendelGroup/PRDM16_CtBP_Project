@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+
+
+RAW_DATA_dir=./1_Raw_Reads
+
+
+#This is a for loop that downloads our published RNA-seq raw data that we generated for our paper
+#
+
+for acc in SRR35011056 SRR35011055 SRR35011054 SRR35011053 SRR35011058 SRR35011057
+do
+	echo ${acc} >> ${RAW_DATA_dir}/download.log
+	fasterq-dump ${acc} >> ${RAW_DATA_dir}/download.log 2>&1
+	echo -e "\n" >> ${RAW_DATA_dir}/download.log
+done
+
+# Move the raw data files to the "1_Raw_Reads" directory and rename them accordingly
+mv SRR* ${RAW_DATA_dir}
+
+mv ${RAW_DATA_dir}/SRR35011056_1.fastq ${RAW_DATA_dir}/rns_Prdm16WT_1_R1.fastq
+mv ${RAW_DATA_dir}/SRR35011056_2.fastq ${RAW_DATA_dir}/rns_Prdm16WT_1_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR35011055_1.fastq ${RAW_DATA_dir}/rns_Prdm16WT_2_R1.fastq
+mv ${RAW_DATA_dir}/SRR35011055_2.fastq ${RAW_DATA_dir}/rns_Prdm16WT_2_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR35011054_1.fastq ${RAW_DATA_dir}/rns_Prdm16WT_3_R1.fastq
+mv ${RAW_DATA_dir}/SRR35011054_2.fastq ${RAW_DATA_dir}/rns_Prdm16WT_3_R2.fastq
+
+
+mv ${RAW_DATA_dir}/SRR35011053_1.fastq ${RAW_DATA_dir}/rns_Prdm16KO_1_R1.fastq
+mv ${RAW_DATA_dir}/SRR35011053_2.fastq ${RAW_DATA_dir}/rns_Prdm16KO_1_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR35011058_1.fastq ${RAW_DATA_dir}/rns_Prdm16KO_2_R1.fastq
+mv ${RAW_DATA_dir}/SRR35011058_2.fastq ${RAW_DATA_dir}/rns_Prdm16KO_2_R2.fastq
+
+mv ${RAW_DATA_dir}/SRR35011057_1.fastq ${RAW_DATA_dir}/rns_Prdm16KO_3_R1.fastq
+mv ${RAW_DATA_dir}/SRR35011057_2.fastq ${RAW_DATA_dir}/rns_Prdm16KO_3_R2.fastq

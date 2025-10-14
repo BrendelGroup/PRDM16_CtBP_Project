@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+
+
+for file in Prdm16WT_PPC_1 Prdm16WT_PPC_2 Prdm16WT_PPC_3 Prdm16WT_PPC_4 Prdm16KO_PPC_1 Prdm16KO_PPC_2 Prdm16KO_PPC_3 Prdm16KO_PPC_4 Prdm16WT_TPC_1 Prdm16WT_TPC_2 Prdm16WT_TPC_3 Prdm16WT_TPC_4 Prdm16KO_TPC_1 Prdm16KO_TPC_2 Prdm16KO_TPC_3 Prdm16KO_TPC_4
+do
+	mv ${file}/${file}_Aligned.sortedByCoord.out.bam ./${file}.bam
+done
+
+
+for file in Prdm16WT_PPC_1 Prdm16WT_PPC_2 Prdm16WT_PPC_3 Prdm16WT_PPC_4 Prdm16KO_PPC_1 Prdm16KO_PPC_2 Prdm16KO_PPC_3 Prdm16KO_PPC_4 Prdm16WT_TPC_1 Prdm16WT_TPC_2 Prdm16WT_TPC_3 Prdm16WT_TPC_4 Prdm16KO_TPC_1 Prdm16KO_TPC_2 Prdm16KO_TPC_3 Prdm16KO_TPC_4
+do
+	samtools index ./${file}.bam
+	bash ../../../Tools/xcountSAMtypes ${file}.bam > ${file}.counts
+done

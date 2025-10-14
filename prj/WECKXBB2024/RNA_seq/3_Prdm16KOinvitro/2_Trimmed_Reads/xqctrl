@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+
+
+SAMPLES="Prdm16WT_1 Prdm16WT_2 Prdm16WT_3"
+DOWNLOADdir=../1_Raw_Reads
+NTHREADS=4
+
+for sample in ${SAMPLES}
+do
+	mkdir ./${sample}
+	cd ./${sample}
+	\cp ../Makefile_PEreadPreparation_template ./Makefile_PEreadPreparation_${sample}
+	sed -i "s/SAMPLE         = LABEL/SAMPLE         = ${sample}/;" ./Makefile_PEreadPreparation_${sample}
+	sed -i "s#FASTQDIR       = ../../../DOWNLOADdir#FASTQDIR       = ../${DOWNLOADdir}#;" ./Makefile_PEreadPreparation_${sample}
+	(make -j $NTHREADS -I../ -I../../ -f ./Makefile_PEreadPreparation_${sample} >& ./err_${sample}) &
+	cd ..
+done
+wait
+
+SAMPLES="Prdm16KO_1 Prdm16KO_2 Prdm16KO_3"
+DOWNLOADdir=../1_Raw_Reads
+NTHREADS=4
+for sample in ${SAMPLES}
+do
+	mkdir ./${sample}
+	cd ./${sample}
+	\cp ../Makefile_PEreadPreparation_template ./Makefile_PEreadPreparation_${sample}
+	sed -i "s/SAMPLE         = LABEL/SAMPLE         = ${sample}/;" ./Makefile_PEreadPreparation_${sample}
+	sed -i "s#FASTQDIR       = ../../../DOWNLOADdir#FASTQDIR       = ../${DOWNLOADdir}#;" ./Makefile_PEreadPreparation_${sample}
+	(make -j $NTHREADS -I../ -I../../ -f ./Makefile_PEreadPreparation_${sample} >& ./err_${sample}) &
+	cd ..
+done
+wait

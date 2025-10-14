@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+
+
+peaks_dir=../ChIP_seq/4_Peaks
+REP_PEAKS_dir=${peaks_dir}/Reproduced_Peaks
+
+INTERSECTION_dir=./1_Intersections
+
+MOTIF_dir=./2_Motif_Analysis
+
+
+
+mkdir ${MOTIF_dir}/CTBP2
+mkdir ${MOTIF_dir}/PRDM16_with_CTBP2
+mkdir ${MOTIF_dir}/Preparse_CTBP2
+mkdir ${MOTIF_dir}/Preparse_PRDM16_with_CTBP2
+
+
+#Motif Analysis of the CTBP2 binding coordinates
+
+findMotifsGenome.pl \
+	${REP_PEAKS_dir}/CTBP2_NSC_final_peaks.bed \
+	mm39 \
+	${MOTIF_dir}/CTBP2/ \
+	-size 100 \
+	-preparsedDir ${MOTIF_dir}/Preparse_CTBP2/ >& ./y2a_CTBP2_motif_analysis.logfile &
+
+
+#Motif analysis of the PRDM16 binding coordinates that intersect with CTBP2 binding coordinates
+
+findMotifsGenome.pl \
+	${INTERSECTION_dir}/r1_PRDM16_with_CTBP2.bed \
+	mm39 \
+	${MOTIF_dir}/PRDM16_with_CTBP2/ \
+	-size 100 \
+	-preparsedDir ${MOTIF_dir}/Preparse_PRDM16_with_CTBP2/ >& ./y2b_PRDM16_with_CTBP2_motif_analysis.logfile
+
+wait

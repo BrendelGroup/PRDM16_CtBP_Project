@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 
-workdir=${PWD}/..
-peaks_dir=${workdir}/ChIP_seq/4_Peaks
+
+peaks_dir=./4_Peaks
 REP_PEAKS_dir=${peaks_dir}/Reproduced_Peaks
 
 
@@ -16,9 +16,9 @@ echo ''
 # To make a log for the reproduced peaks for the all the ChIP-seq experiments except for CTBP2
 for sample in PRDM16_e HDAC1_e LSD1_e CTCF_wb H3K4me3_e H3K27ac_e H3K4me1_e
 do
-   echo ${sample}'_1 has' "$(grep -c . ${peaks_dir}/${sample}_1/${sample}_1_filtered.bed)" 'peaks.' ${sample}'_2 has' "$(grep -c . ${peaks_dir}/${sample}_2/${sample}_2_filtered.bed)" 'peaks.' 
-   echo "$(grep -c . ${REP_PEAKS_dir}/${sample}_final_peaks.bed)" ${sample} 'peaks were reproduced.'
-   echo ''
+	echo ${sample}'_1 has' "$(grep -c . ${peaks_dir}/${sample}_1/${sample}_1_filtered.bed)" 'peaks.' ${sample}'_2 has' "$(grep -c . ${peaks_dir}/${sample}_2/${sample}_2_filtered.bed)" 'peaks.' 
+	echo "$(grep -c . ${REP_PEAKS_dir}/${sample}_final_peaks.bed)" ${sample} 'peaks were reproduced.'
+	echo ''
 done
 
 
@@ -31,10 +31,10 @@ echo ''
 
 # To make a log for the union set of peaks for the CTBP2 experiments
 for CTBP2peakFile in CTBP2_e CTBP2wt_n
-do 
-   echo ${CTBP2peakFile}'_1' 'has' "$(grep -c . ${peaks_dir}/${CTBP2peakFile}_1/${CTBP2peakFile}_1_filtered.bed)" 'peaks.' ${CTBP2peakFile}'_2' 'has' "$(grep -c . ${peaks_dir}/${CTBP2peakFile}_2/${CTBP2peakFile}_2_filtered.bed)" 'peaks.' 
-   echo 'The union set of peaks for' ${CTBP2peakFile} 'is' "$(grep -c . ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks.bed)"
-   echo ''
+do
+	echo ${CTBP2peakFile}'_1' 'has' "$(grep -c . ${peaks_dir}/${CTBP2peakFile}_1/${CTBP2peakFile}_1_filtered.bed)" 'peaks.' ${CTBP2peakFile}'_2' 'has' "$(grep -c . ${peaks_dir}/${CTBP2peakFile}_2/${CTBP2peakFile}_2_filtered.bed)" 'peaks.' 
+	echo 'The union set of peaks for' ${CTBP2peakFile} 'is' "$(grep -c . ${REP_PEAKS_dir}/${CTBP2peakFile}_union_peaks.bed)"
+	echo ''
 done
 
 

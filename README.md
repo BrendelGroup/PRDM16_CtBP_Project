@@ -10,7 +10,7 @@ __Warren, S., El Farran, B., Choudhuril, A., Kang, S., Xiong, S., Brendel, V.P. 
 _A PRDM16-CtBP1/2 Complex Interacts with HDAC1/2 to Regulate Transcriptional Programs of Neurogenesis and Guide Cortical Neuron Migration._
 submitted
 
-Follow the instructions in [0README](https://github.com/BrendelGroup/PRDM16_CtBP_Project/blob/main/prj/WECKXBB2024/0README)
+Follow the instructions in [0README](https://github.com/BrendelGroup/PRDM16_CtBP_Project/blob/main/prj/WECKXBB2024/0README.md)
 to reproduce the work (or use the workflow as a template for analysis of your own data sets).
 
 
